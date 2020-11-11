@@ -60,7 +60,7 @@ private:
 public:
     linkedlist(char listType)
     { // el constructor toma como parametros el tipo de lista que vamos a implementar
-        // y el tamaño de la misma si queremos que esta tenga un tamaño inicial
+
         this->ListType = ListType;
         this->size = 0;
         if (this->ListType == 's' || this->ListType == 'S')
