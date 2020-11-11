@@ -54,7 +54,8 @@ private:
     int size;      //tamaño de la lista
 
     Node<ty> *HeadrefS; // referencia a Head simple
-    Node<ty> *nde;
+    Node<ty> *TailrefS; // referencia al ultimo elemento de la lista
+    Node<ty> *nde;      // nodos simples
 
 public:
     linkedlist(char listType)
@@ -65,18 +66,34 @@ public:
         if (this->ListType == 's' || this->ListType == 'S')
         { //asignamos la cabercera de acuerdo al tipo de lista
             HeadrefS = NULL;
+            TailrefS = NULL;
         }
     }
 
     void Push(ty Data)
-    {
+    { // inserta un elemento al principio de la lista
 
-        nde = new Node<ty>();
+        Node<ty> *tmp = HeadrefS;
 
-        nde->changedata(Data);
-        nde->next = HeadrefS;
+        nde = new Node<ty>(); //crea un nuevo nodo
+
+        nde->changedata(Data); //insertamos el dato
+        nde->next = HeadrefS;  // cambiamos la referencia al sig.
         HeadrefS = nde;
-        size += 1;
+        size += 1; //aumentamos el tamaño de la lista por cada push
+
+        tmp = nde;
+
+        if (size == 0)
+            TailrefS = nde;
+        else
+        {
+            while (tmp->next != NULL)
+            {
+                tmp = tmp->next;
+            }
+            TailrefS = tmp;
+        }
     }
 
     Node<ty> *Head()
@@ -85,6 +102,11 @@ public:
         return this->HeadrefS;
     }
 
+    Node<ty> *Tail()
+    {
+        TailrefS->showdata();
+        return this->TailrefS;
+    }
     int listsize()
     {
         return this->size;
@@ -98,8 +120,13 @@ int main(int argc, char const *argv[])
 {
     linkedlist<int> L('s');
 
-    L.Push(150);
+    L.Push(150); //tail
+    L.Push(100);
+    L.Push(500);
+    L.Push(10000);
+    L.Push(120); //head
     L.Head();
+    L.Tail();
 
     return 0;
 }
