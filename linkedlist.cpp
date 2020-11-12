@@ -18,11 +18,29 @@ public:
 
     Node();
 
+<<<<<<< HEAD
     Node<type> &changedata(type newData);
 
     void showdata();
 
     type getdata();
+=======
+    Node<type> &changedata(type newData)
+    { //cambia los datos del nodo
+        Data = newData;
+        return *this;
+    }
+
+    void showdata()
+    { //muestra los datos del nodo
+        std::cout << Data << std::endl;
+    }
+
+    type getdata()
+    { //retorna la data como valor
+        return this->Data;
+    }
+>>>>>>> 5b6fcb2d6110cfd99ac4a89e99cce7dab8791273
 
     ~Node();
 };
@@ -78,6 +96,7 @@ private:
     Node<ty> *nde;      // nodos simples
 
 public:
+<<<<<<< HEAD
     linkedlist(char listType = 's');
 
     void push(ty Data); //colocar un elemento al principio de la lista
@@ -178,6 +197,17 @@ void linkedlist<ty>::push(ty Data)
         while (tmp->next != NULL)
         {
             tmp = tmp->next;
+=======
+    linkedlist(char listType)
+    { // el constructor toma como parametros el tipo de lista que vamos a implementar
+
+        this->ListType = ListType;
+        this->size = 0;
+        if (this->ListType == 's' || this->ListType == 'S')
+        { //asignamos la cabercera de acuerdo al tipo de lista
+            HeadrefS = NULL;
+            TailrefS = NULL;
+>>>>>>> 5b6fcb2d6110cfd99ac4a89e99cce7dab8791273
         }
         this->TailrefS = tmp;
     }
@@ -188,6 +218,7 @@ void linkedlist<ty>::append(ty Data)
 { //inserta elementos al final de la lista
     Node<ty> *tmp;
 
+<<<<<<< HEAD
     if (HeadrefS == NULL && TailrefS == NULL)
     {
         /*nde->next = tmp;
@@ -241,11 +272,38 @@ Node<ty> *linkedlist<ty>::at(int index)
     {
         tmp = tmp->next;
         k++;
+=======
+    void push(ty Data)
+    { // inserta un elemento al principio de la lista
+
+        Node<ty> *tmp = HeadrefS;
+
+        nde = new Node<ty>(); //crea un nuevo nodo
+
+        nde->changedata(Data); //insertamos el dato
+        nde->next = HeadrefS;  // cambiamos la referencia al sig.
+        HeadrefS = nde;
+        size += 1; //aumentamos el tamaño de la lista por cada push
+
+        tmp = nde;
+
+        if (size == 1)
+            TailrefS = nde;
+        else
+        {
+            while (tmp->next != NULL)
+            {
+                tmp = tmp->next;
+            }
+            TailrefS = tmp;
+        }
+>>>>>>> 5b6fcb2d6110cfd99ac4a89e99cce7dab8791273
     }
     tmp->showdata(); // eliminalo si quieres
     return tmp;
 };
 
+<<<<<<< HEAD
 template <class ty>
 bool linkedlist<ty>::empty()
 { //regresa true si la lista esta vacia
@@ -258,9 +316,42 @@ bool linkedlist<ty>::empty()
     {
         std::cout << "False\n";
         return false;
+=======
+    void append(ty Data)
+    { //inserta elementos al final de la lista
+        Node<ty> *tmp = HeadrefS;
+        nde = new Node<ty>();
+        nde->changedata(Data);
+
+        if (TailrefS == NULL)
+        {
+            nde->next = HeadrefS;
+            HeadrefS = nde;
+            TailrefS = nde;
+            size += 1;
+        }
+        else
+        {
+            while (tmp->next != NULL)
+            {
+                tmp = tmp->next;
+            }
+            tmp->next = nde;
+            TailrefS = tmp->next;
+            size += 1;
+        }
+    }
+
+    Node<ty> *head()
+    { // retorna un puntero a head
+
+        HeadrefS->showdata(); // eliminalo si quieres
+        return this->HeadrefS;
+>>>>>>> 5b6fcb2d6110cfd99ac4a89e99cce7dab8791273
     }
 };
 
+<<<<<<< HEAD
 template <class ty>
 int linkedlist<ty>::listsize()
 { //retorna el tamaño de la lista
@@ -280,6 +371,54 @@ void linkedlist<ty>::printlist()
     }
 
     while (tmp != NULL)
+=======
+    Node<ty> *tail()
+    { //retorna un puntero a tail(final de la lista)
+
+        TailrefS->showdata(); // eliminalo si quieres
+        return this->TailrefS;
+    }
+
+    Node<ty> *at(int index)
+    { //retorna el elemto de la lista indicado
+        //los indices empiezan en 0
+
+        Node<ty> *tmp = nde;
+        int k = 0;
+
+        while (k < index && tmp != NULL)
+        {
+            tmp = tmp->next;
+            k++;
+        }
+        tmp->showdata(); // eliminalo si quieres
+        return tmp;
+    }
+
+    int listsize()
+    { //retorna el tamaño de la lista
+        return this->size;
+    }
+
+    void printlist()
+    { // imprime la lista
+        Node<ty> *tmp = nde;
+        int k = 0;
+
+        while (tmp != NULL)
+        {
+            if (k == 0)
+                std::cout << tmp->getdata();
+            else
+                std::cout << "-> " << tmp->getdata();
+            tmp = tmp->next;
+            k++;
+        }
+        std::cout << std::endl;
+    }
+
+    ~linkedlist()
+>>>>>>> 5b6fcb2d6110cfd99ac4a89e99cce7dab8791273
     {
         if (k == 0)
             std::cout << tmp->getdata();
@@ -296,9 +435,26 @@ linkedlist<ty>::~linkedlist(){};
 
 int main(int argc, char const *argv[])
 {
+<<<<<<< HEAD
 
     linkedlist<int> List2, list;
     linkedlist<float> listf, L;
+=======
+    linkedlist<double> L('s');
+
+    L.push(150); //tail
+    L.push(100.56546);
+    L.push(500);
+    L.push(10000);
+    L.append(-5);
+    L.append(-2);
+    L.append(-1);
+    L.push(120); //head
+    L.head();
+    L.tail();
+    L.printlist();
+    L.at(L.listsize() - 1);
+>>>>>>> 5b6fcb2d6110cfd99ac4a89e99cce7dab8791273
 
     L.push(150);
     L.push(100.56546);
