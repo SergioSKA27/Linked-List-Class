@@ -132,7 +132,7 @@ void linkedlist<ty>::push(ty Data)
     this->HeadrefS = this->nde;
     this->size += 1; //aumentamos el tamaño de la lista por cada push
 
-    tmp = nde;
+    tmp = this->HeadrefS;
 
     if (size == 1)
         this->TailrefS = this->nde;
@@ -149,30 +149,30 @@ void linkedlist<ty>::push(ty Data)
 template <class ty>
 void linkedlist<ty>::append(ty Data)
 { //inserta elementos al final de la lista
-    Node<ty> *tmp;
+    Node<ty> *tmp = NULL;
 
-    if (HeadrefS == NULL && TailrefS == NULL)
+    if (this->HeadrefS == NULL && this->TailrefS == NULL)
     {
         /*nde->next = tmp;
         tmp = nde;
         TailrefS = nde;*/
-        this->append(Data);
+        this->push(Data);
 
         //emptys = false;
     }
     else
     {
-        tmp = HeadrefS;
-        nde = new Node<ty>();
-        nde->changedata(Data);
+        tmp = this->HeadrefS;
+        this->nde = new Node<ty>();
+        this->nde->changedata(Data);
         while (tmp->next != NULL)
         {
             tmp = tmp->next;
         }
         tmp->next = nde;
-        TailrefS = tmp->next;
-        size += 1;
-        emptys = false;
+        this->TailrefS = tmp->next;
+        this->size += 1;
+        this->emptys = false;
     }
 };
 
@@ -246,7 +246,7 @@ Node<ty> *linkedlist<ty>::at(int index)
 { //retorna el elemto de la lista indicado
     //los indices empiezan en 0
 
-    Node<ty> *tmp = this->nde;
+    Node<ty> *tmp = this->HeadrefS;
     int k = 0;
 
     while (k < index && tmp != NULL)
@@ -282,7 +282,7 @@ int linkedlist<ty>::listsize()
 template <class ty>
 void linkedlist<ty>::printlist()
 { // imprime la lista
-    Node<ty> *tmp = nde;
+    Node<ty> *tmp = this->HeadrefS;
     int k = 0;
 
     if (tmp == NULL)
@@ -306,25 +306,6 @@ void linkedlist<ty>::printlist()
 template <class ty>
 void linkedlist<ty>::pop()
 {
-    Node<ty> *newhead = this->nde->next;
-    Node<ty> *tmp = this->HeadrefS;
-    Node<ty> *ftail;
-    delete[] tmp;
-    this->HeadrefS->next = newhead->next;
-    this->HeadrefS = newhead;
-    ftail = HeadrefS;
-
-    if (HeadrefS == NULL)
-    {
-        this->emptys = true;
-        return;
-    }
-    while (ftail->next != NULL)
-    {
-        ftail = ftail->next;
-    }
-    this->TailrefS = ftail;
-    this->size -= 1;
 }
 
 template <class ty>
@@ -340,10 +321,9 @@ int main(int argc, char const *argv[])
     L.push(100.56546);
     L.push(500);
     L.push(10000);
-    L.printlist();
-    //L.append(-5);
-    //L.append(-2);
-    L.pop();
+    //L.printlist();
+    L.append(-5);
+    L.append(-2);
     L.printlist();
     L.tail();
     L.at(L.listsize() - 1);
