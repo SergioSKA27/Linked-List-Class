@@ -245,10 +245,13 @@ template <class ty>
 Node<ty> *linkedlist<ty>::at(int index)
 { //retorna el elemto de la lista indicado
     //los indices empiezan en 0
-
     Node<ty> *tmp = this->HeadrefS;
     int k = 0;
 
+    if (index == 0)
+        return this->HeadrefS;
+    if (index == this->size - 1)
+        return this->TailrefS;
     while (k < index && tmp != NULL)
     {
         tmp = tmp->next;
@@ -315,18 +318,32 @@ void linkedlist<ty>::pop()
         this->HeadrefS = this->HeadrefS->next;
         delete tmp;
         this->size -= 1;
+        if (this->HeadrefS == NULL) // si la lista esta vacia
+            this->emptys = true;
     }
 }
 
 template <class ty>
-linkedlist<ty>::~linkedlist(){};
+linkedlist<ty>::~linkedlist()
+{
+    while (this->HeadrefS != NULL)
+    {
+        this->pop();
+    }
+};
 
 int main(int argc, char const *argv[])
 {
 
     linkedlist<int> List2, list;
     linkedlist<float> listf, L;
-    L.append(-1);
+
+    L.push(15);
+    L.empty();
+    L.pop();
+    L.empty();
+
+    /*L.append(-1);
     L.push(150);
     L.push(100.56546);
     L.push(500);
@@ -350,7 +367,7 @@ int main(int argc, char const *argv[])
     List2.push(10);
     List2.printlist();
     list.empty();
-    listf.printlist();
+    listf.printlist();*/
     return 0;
 }
 
