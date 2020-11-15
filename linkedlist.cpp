@@ -306,6 +306,16 @@ void linkedlist<ty>::printlist()
 template <class ty>
 void linkedlist<ty>::pop()
 {
+    Node<ty> *tmp = NULL;
+    if (this->HeadrefS == NULL)
+        return;
+    else
+    {
+        tmp = this->HeadrefS;
+        this->HeadrefS = this->HeadrefS->next;
+        delete tmp;
+        this->size -= 1;
+    }
 }
 
 template <class ty>
@@ -316,18 +326,20 @@ int main(int argc, char const *argv[])
 
     linkedlist<int> List2, list;
     linkedlist<float> listf, L;
-
+    L.append(-1);
     L.push(150);
     L.push(100.56546);
     L.push(500);
     L.push(10000);
-    //L.printlist();
+    L.printlist();
+    L.pop();
+    L.printlist();
     L.append(-5);
     L.append(-2);
     L.printlist();
     L.tail();
     L.at(L.listsize() - 1);
-    /*L.append(-1); //tail
+    L.append(-1); //tail
     L.push(120);
     L.push(888); //head
     L.head();
@@ -338,7 +350,7 @@ int main(int argc, char const *argv[])
     List2.push(10);
     List2.printlist();
     list.empty();
-    listf.printlist();*/
+    listf.printlist();
     return 0;
 }
 
