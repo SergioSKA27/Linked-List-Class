@@ -98,7 +98,9 @@ public:
 
     void printlist(); //imprimir lista
 
-    void pop();
+    void pop_front();
+
+    void pop_back();
 
     ~linkedlist();
 };
@@ -307,8 +309,8 @@ void linkedlist<ty>::printlist()
 };
 
 template <class ty>
-void linkedlist<ty>::pop()
-{
+void linkedlist<ty>::pop_front()
+{ //elimina un elemento al principio de la lista
     Node<ty> *tmp = NULL;
     if (this->HeadrefS == NULL)
         return;
@@ -324,12 +326,41 @@ void linkedlist<ty>::pop()
 }
 
 template <class ty>
-linkedlist<ty>::~linkedlist()
-{
-    while (this->HeadrefS != NULL)
+void linkedlist<ty>::pop_back()
+{ //elimina el elemento al final de la lista
+    Node<ty> *tmp = NULL, *fnwt = NULL, *prev = NULL;
+    int k = 0;
+
+    if (this->TailrefS == NULL)
+        return;
+    else
+    {
+        prev = this->HeadrefS;
+        tmp = this->TailrefS;
+        while (prev != NULL && k < this->size - 2)
+        {
+            prev = prev->next;
+            k++;
+        }
+        prev->next = NULL;
+        delete tmp;
+        this->size -= 1;
+        fnwt = this->HeadrefS;
+        while (fnwt->next != NULL)
+        {
+            fnwt = fnwt->next;
+        }
+        this->TailrefS = fnwt;
+    }
+}
+
+template <class ty>
+linkedlist<ty>::~linkedlist(){
+
+    /* while (this->HeadrefS != NULL)
     {
         this->pop();
-    }
+    }*/
 };
 
 int main(int argc, char const *argv[])
@@ -338,18 +369,18 @@ int main(int argc, char const *argv[])
     linkedlist<int> List2, list;
     linkedlist<float> listf, L;
 
-    L.push(15);
+    /*L.push(15);
     L.empty();
     L.pop();
-    L.empty();
+    L.empty();*/
 
-    /*L.append(-1);
+    L.append(-1);
     L.push(150);
     L.push(100.56546);
     L.push(500);
     L.push(10000);
     L.printlist();
-    L.pop();
+    L.pop_back();
     L.printlist();
     L.append(-5);
     L.append(-2);
@@ -359,15 +390,17 @@ int main(int argc, char const *argv[])
     L.append(-1); //tail
     L.push(120);
     L.push(888); //head
+    L.printlist();
     L.head();
     L.tail();
+    //L.~linkedlist();
     L.printlist();
     L.at(5);
     List2.push(15);
     List2.push(10);
     List2.printlist();
     list.empty();
-    listf.printlist();*/
+    listf.printlist();
     return 0;
 }
 
