@@ -4,6 +4,12 @@
 #include <cstdlib>
 #include <vector>
 #include <exception>
+
+/*Created By : Sergio :v 
+
+Solamente Dios y yo sabiamos lo que haciamos al escribir este codigo, 
+ahora solo Dios lo sabe , Suerte si intentas modificarlo :). 
+*/
 //node class
 template <class type>
 class Node
@@ -84,7 +90,9 @@ public:
 
     void append(ty Data); //colocar un elemento al final de la lista
 
-    void insert(int index, ty Data);
+    void insert(int index, ty Data); //inserta un nodo en el indice
+
+    void insert_after(int index, ty Data); //inserta un nodo despues del indice
 
     Node<ty> *head(); //retorna un puntero a head(principio de la lista)
 
@@ -128,8 +136,8 @@ void linkedlist<ty>::push(ty Data)
 
     this->nde = new Node<ty>(); //crea un nuevo nodo
 
-    this->nde->changedata(Data); //insertamos el dato
-    this->emptys = false;
+    this->nde->changedata(Data);      //insertamos el dato
+    this->emptys = false;             //cambiamos el estado de empty
     this->nde->next = this->HeadrefS; // cambiamos la referencia al sig.
     this->HeadrefS = this->nde;
     this->size += 1; //aumentamos el tamaño de la lista por cada push
@@ -154,76 +162,111 @@ void linkedlist<ty>::append(ty Data)
     Node<ty> *tmp = NULL;
 
     if (this->HeadrefS == NULL && this->TailrefS == NULL)
-    {
-        /*nde->next = tmp;
-        tmp = nde;
-        TailrefS = nde;*/
+    { //si la lista esta vacia hacemos push
         this->push(Data);
-
-        //emptys = false;
     }
     else
     {
-        tmp = this->HeadrefS;
-        this->nde = new Node<ty>();
-        this->nde->changedata(Data);
+        tmp = this->HeadrefS;        //referencia al primero de la lista
+        this->nde = new Node<ty>();  //creamos el nuevo nodo
+        this->nde->changedata(Data); //insertamos la data en el nodo
         while (tmp->next != NULL)
-        {
+        { //buscamos el ultimo de la lista
             tmp = tmp->next;
         }
-        tmp->next = nde;
-        this->TailrefS = tmp->next;
-        this->size += 1;
+        tmp->next = nde;            // el sig. del final es el nuevo nodo
+        this->TailrefS = tmp->next; //cambiamos la ref. al ultimo
+        this->size += 1;            //aumentamos el tamaño
         this->emptys = false;
     }
 };
 
 template <class ty>
 void linkedlist<ty>::insert(int index, ty Data)
-{
-    Node<ty> *next_n = NULL, *prev_n = NULL;
-    Node<ty> *tmp = HeadrefS;
-    Node<ty> *ftail = this->HeadrefS;
+{ //inserta un nodo el el indice señalado
+    Node<ty> *fnext = NULL, *findprev = NULL, *ftail = NULL;
+    Node<ty> *tmp = NULL;
     int k = 0;
 
-    this->nde = new Node<ty>();
-    this->nde->changedata(Data);
-
     if (index == 0)
-    {
-        this->nde->next = this->HeadrefS;
-        this->HeadrefS = this->nde;
-        while (ftail->next != NULL)
-        {
-            ftail = ftail->next;
-        }
-        this->TailrefS = ftail;
-        this->size += 1;
-        return;
+    { //si el index es 0
+        this->push(Data);
+    }
+    else if (index == this->size - 1)
+    { //si el index es el ultimo de la lista
+        this->append(Data);
     }
     else
-    {
+    { //elementos intermedios
+        tmp = this->HeadrefS;
+        this->nde = new Node<ty>(); //creamos el nuevo nodo
+        this->nde->changedata(Data);
 
-        /*while (tmp->next != NULL)
-        {
-            tmp = tmp->next;
+        while (k < this->size - 1 && tmp != NULL)
+        {                       //buscamos el previo y el sig. para insertar
+            if (k == index - 1) //previo
+                findprev = tmp;
             if (k == index)
-                prev_n = tmp;
-            if (k == index + 1)
-                next_n = tmp;
+                fnext = tmp; //siguiente
+
+            tmp = tmp->next; //iteramos la lista
             k++;
         }
-        prev_n->showdata();
-        next_n->showdata();
 
+        findprev->next = this->nde; // el sig. del previo es el nuevo nodo
+        this->nde->next = fnext;    // el sig. del nuevo nodo es el sig. del previo
+        this->size += 1;            //aumentamos el tamaño
+        this->emptys = false;
+
+        ftail = this->HeadrefS;
         while (ftail->next != NULL)
-        {
+        { //buscamos el nuevo tail
             ftail = ftail->next;
         }
-        this->TailrefS = ftail;
-        this->size += 1;
-*/
-        return;
+        this->TailrefS = ftail; //actualizamos el nuevo tail
+    }
+}
+
+template <class ty>
+void linkedlist<ty>::insert_after(int index, ty Data)
+{ //inserta un nodo despues del indice
+    Node<ty> *fnext = NULL, *findprev = NULL, *ftail = NULL;
+    Node<ty> *tmp = NULL;
+    int k = 0;
+
+    if (index == this->size - 1)
+    { //si el index es el ultimo de la lista
+        this->append(Data);
+    }
+    else
+    { //resto del los elementos
+        tmp = this->HeadrefS;
+        this->nde = new Node<ty>(); //creamos el nuevo nodo
+        this->nde->changedata(Data);
+
+        while (k < this->size - 1 && tmp != NULL)
+        { //buscamos el previo y el sig. para insertar
+
+            if (k == index) //previo
+                findprev = tmp;
+            if (k == index + 1)
+                fnext = tmp; //siguiente
+
+            tmp = tmp->next; //iteramos la lista
+            k++;
+        }
+
+        findprev->next = this->nde; // el sig. del previo es el nuevo nodo
+        this->nde->next = fnext;    // el sig. del nuevo nodo es el sig. del previo
+        this->size += 1;            //aumentamos el tamaño
+        this->emptys = false;
+
+        ftail = this->HeadrefS;
+        while (ftail->next != NULL)
+        { //buscamos el nuevo tail
+            ftail = ftail->next;
+        }
+        this->TailrefS = ftail; //actualizamos el nuevo tail
     }
 }
 
@@ -250,12 +293,16 @@ Node<ty> *linkedlist<ty>::at(int index)
     Node<ty> *tmp = this->HeadrefS;
     int k = 0;
 
-    if (index == 0)
-        return this->HeadrefS;
-    if (index == this->size - 1)
+    if (index)
+
+        if (index == 0)
+            //para ingresar el primer elemento
+            return this->HeadrefS;
+    if (index == this->size - 1 || index == -1)
+        //para ingresar al ultimo elemento puedes usar el indice -1 o el tamaño total de la lista.
         return this->TailrefS;
     while (k < index && tmp != NULL)
-    {
+    { //para acceder a otra posicion
         tmp = tmp->next;
         k++;
     }
@@ -268,12 +315,12 @@ bool linkedlist<ty>::empty()
 { //regresa true si la lista esta vacia
     if (emptys)
     {
-        std::cout << "True\n";
+        std::cout << "True\n"; //eliminalo si quieres
         return true;
     }
     else
     {
-        std::cout << "False\n";
+        std::cout << "False\n"; //^same
         return false;
     }
 };
@@ -379,6 +426,8 @@ int main(int argc, char const *argv[])
     L.push(100.56546);
     L.push(500);
     L.push(10000);
+    L.insert(1, -99);
+    L.insert_after(0, -100);
     L.printlist();
     L.pop_back();
     L.printlist();
@@ -389,6 +438,7 @@ int main(int argc, char const *argv[])
     L.at(L.listsize() - 1);
     L.append(-1); //tail
     L.push(120);
+
     L.push(888); //head
     L.printlist();
     L.head();
@@ -400,6 +450,7 @@ int main(int argc, char const *argv[])
     List2.push(10);
     List2.printlist();
     list.empty();
+    listf.insert(0, 1);
     listf.printlist();
     return 0;
 }
