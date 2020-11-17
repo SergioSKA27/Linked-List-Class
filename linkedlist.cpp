@@ -68,6 +68,66 @@ type Node<type>::getdata()
 template <class type>
 Node<type>::~Node(){};
 
+template <class tp>
+class NodeD
+{
+private:
+    tp Data;
+
+public:
+    NodeD *next;
+    NodeD *prev;
+
+    NodeD(tp Data);
+
+    NodeD();
+
+    NodeD<tp> &changedata(tp newData);
+
+    void showdata();
+
+    tp getdata();
+
+    ~NodeD();
+};
+
+template <class tp>
+NodeD<tp>::NodeD(tp Data)
+{
+    this->Data = Data;
+    this->next = NULL;
+    this->prev = NULL;
+};
+
+template <class tp>
+NodeD<tp>::NodeD()
+{
+    this->next = NULL;
+    this->prev = NULL;
+};
+
+template <class tp>
+NodeD<tp> &NodeD<tp>::changedata(tp newData)
+{ //cambia los datos del nodo
+    Data = newData;
+    return *this;
+};
+
+template <class tp>
+void NodeD<tp>::showdata()
+{ //muestra los datos del nodo
+    std::cout << this->Data << std::endl;
+};
+
+template <class tp>
+tp NodeD<tp>::getdata()
+{ //retorna la data como valor
+    return this->Data;
+};
+
+template <class tp>
+NodeD<tp>::~NodeD(){};
+
 //linked list class
 
 template <class ty>
@@ -433,12 +493,12 @@ int main(int argc, char const *argv[])
     L.printlist();
     L.append(-5);
     L.append(-2);
+    L.pop_front();
     L.printlist();
     L.tail();
     L.at(L.listsize() - 1);
     L.append(-1); //tail
     L.push(120);
-
     L.push(888); //head
     L.printlist();
     L.head();
