@@ -68,6 +68,7 @@ type Node<type>::getdata()
 template <class type>
 Node<type>::~Node(){};
 
+// Nodo doble
 template <class tp>
 class NodeD
 {
@@ -134,9 +135,7 @@ template <class ty>
 class linkedlist
 {
 private:
-    std::string Ltype;
-    char ListType; //tipo de lista
-    int size;      //tamaño de la lista
+    int size; //tamaño de la lista
     bool emptys;
 
     Node<ty> *HeadrefS; // referencia a Head simple
@@ -144,7 +143,7 @@ private:
     Node<ty> *nde;      // nodos simples
 
 public:
-    linkedlist(char listType = 's');
+    linkedlist();
 
     void push(ty Data); //colocar un elemento al principio de la lista
 
@@ -164,28 +163,23 @@ public:
 
     int listsize(); //tamaño de la lista
 
-    void printlist(); //imprimir lista
+    virtual void printlist(); //imprimir lista
 
-    void pop_front();
+    void pop_front(); //elimina el elemento al principio de la lista.
 
-    void pop_back();
+    void pop_back(); //elimina el elemento al final
 
     ~linkedlist();
 };
 
 template <class ty>
-linkedlist<ty>::linkedlist(char listType)
+linkedlist<ty>::linkedlist()
 { // el constructor toma como parametros el tipo de lista que vamos a implementar
-
-    this->ListType = ListType;
     this->size = 0;
-    if (this->ListType == 's' || this->ListType == 'S')
-    { //asignamos la cabercera de acuerdo al tipo de lista
-        this->HeadrefS = NULL;
-        this->TailrefS = NULL;
-        this->nde = NULL;
-        this->emptys = true;
-    }
+    this->HeadrefS = NULL;
+    this->TailrefS = NULL;
+    this->nde = NULL;
+    this->emptys = true;
 };
 
 template <class ty>
@@ -227,13 +221,10 @@ void linkedlist<ty>::append(ty Data)
     }
     else
     {
-        tmp = this->HeadrefS;        //referencia al primero de la lista
+        tmp = this->TailrefS;        //referencia al ultimo de la lista
         this->nde = new Node<ty>();  //creamos el nuevo nodo
         this->nde->changedata(Data); //insertamos la data en el nodo
-        while (tmp->next != NULL)
-        { //buscamos el ultimo de la lista
-            tmp = tmp->next;
-        }
+
         tmp->next = nde;            // el sig. del final es el nuevo nodo
         this->TailrefS = tmp->next; //cambiamos la ref. al ultimo
         this->size += 1;            //aumentamos el tamaño
@@ -469,12 +460,147 @@ linkedlist<ty>::~linkedlist(){
         this->pop();
     }*/
 };
+//lista doblemente ligada
+template <class t>
+class linkedlistD
+{
+private:
+    //tipo de lista
+    int sz; //tamaño de la lista
+    bool emptys;
+
+    NodeD<t> *HeadrefD; // referencia a Head simple
+    NodeD<t> *TailrefD; // referencia al ultimo elemento de la lista
+    NodeD<t> *nodes;    // nodos simples
+
+public:
+    linkedlistD();
+
+    void push(t Data); //colocar un elemento al principio de la lista
+
+    void append(t Data); //colocar un elemento al final de la lista
+
+    void insert(int index, t Data); //inserta un nodo en el indice
+
+    void insert_after(int index, t Data); //inserta un nodo despues del indice
+
+    NodeD<t> *head(); //retorna un puntero a head(principio de la lista)
+
+    NodeD<t> *tail(); //retorna un puntero a tail(final de la lista)
+
+    NodeD<t> *at(int index); //acceder a un elemento de lista(los indices empiezan en 0)
+
+    bool empty(); //saber si la lista esta vacia
+
+    int listsize(); //tamaño de la lista
+
+    void printlist(); //imprimir lista
+
+    void pop_front();
+
+    void pop_back();
+
+    ~linkedlistD();
+};
+
+template <class t>
+linkedlistD<t>::linkedlistD()
+{
+    this->HeadrefD = NULL;
+    this->TailrefD = NULL;
+    this->nodes = NULL;
+    this->sz = 0;
+    this->emptys = true;
+};
+
+template <class t>
+void linkedlistD<t>::push(t Data)
+{
+
+    NodeD<t> *tmp = this->HeadrefD;
+
+    this->nodes = new NodeD<t>();
+    this->nodes->changedata(Data);
+
+    this->nodes->next = this->HeadrefD;
+    this->nodes->prev = NULL;
+    if (this->HeadrefD != NULL)
+        this->HeadrefD->prev = this->nodes;
+    this->HeadrefD = this->nodes;
+    this->sz += 1;
+    this->emptys = false;
+
+    if (this->sz == 1)
+    {
+        this->TailrefD = this->HeadrefD;
+    }
+    else
+    {
+
+        while (tmp->next != NULL)
+        {
+            tmp = tmp->next;
+        }
+        this->TailrefD = tmp;
+    }
+};
+
+template <class t>
+void linkedlistD<t>::append(t Data)
+{
+}
+
+//template <class t>
+
+//template <class t>
+
+//template <class t>
+
+//template <class t>
+
+//template <class t>
+
+template <class t>
+void linkedlistD<t>::printlist()
+{
+
+    NodeD<t> *tmp = this->HeadrefD;
+    int k = 0;
+    if (tmp == NULL)
+    {
+        std::cout << "empty list\n";
+        return;
+    }
+
+    while (tmp != NULL)
+    {
+        if (k == 0)
+            std::cout << tmp->getdata();
+        else
+            std::cout << " <=> " << tmp->getdata();
+
+        tmp = tmp->next;
+        k++;
+    }
+    std::cout << std::endl;
+};
+
+template <class t>
+linkedlistD<t>::~linkedlistD(){};
 
 int main(int argc, char const *argv[])
 {
 
-    linkedlist<int> List2, list;
+    linkedlist<int> List2, list; //listas simples
     linkedlist<float> listf, L;
+    linkedlistD<int> listadoble;
+
+    listadoble.push(10);
+    listadoble.push(18);
+    listadoble.push(17);
+    listadoble.push(16);
+    listadoble.push(15);
+    listadoble.printlist();
 
     /*L.push(15);
     L.empty();
