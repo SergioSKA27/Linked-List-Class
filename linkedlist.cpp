@@ -169,6 +169,10 @@ public:
 
     void pop_back(); //elimina el elemento al final
 
+    void del(int index); //elimina el elemento del indice proporcionado
+
+    int search(ty element); //busca un elemento y retorna su posicion(indice), si no retorna -1
+
     ~linkedlist();
 };
 
@@ -269,12 +273,12 @@ void linkedlist<ty>::insert(int index, ty Data)
         this->size += 1;            //aumentamos el tamaño
         this->emptys = false;
 
-        ftail = this->HeadrefS;
+        /*ftail = this->HeadrefS;
         while (ftail->next != NULL)
         { //buscamos el nuevo tail
             ftail = ftail->next;
         }
-        this->TailrefS = ftail; //actualizamos el nuevo tail
+        this->TailrefS = ftail; //actualizamos el nuevo tail*/
     }
 }
 
@@ -453,13 +457,77 @@ void linkedlist<ty>::pop_back()
 }
 
 template <class ty>
-linkedlist<ty>::~linkedlist(){
+void linkedlist<ty>::del(int index)
+{
+    Node<ty> *tmp = NULL, *prev = NULL;
+    int k = 0;
 
-    /* while (this->HeadrefS != NULL)
+    if (index == 0)
     {
-        this->pop();
-    }*/
+        this->pop_front();
+        return;
+    }
+    if (index == this->size - 1)
+    {
+        this->pop_back();
+        return;
+    }
+    tmp = this->HeadrefS;
+
+    while (k <= this->size && tmp != NULL)
+    {
+        if (k == index - 1)
+            prev = tmp;
+        if (k == index)
+            break;
+
+        tmp = tmp->next;
+        k++;
+    }
+
+    prev->next = tmp->next;
+    delete tmp;
+    this->size -= 1;
+}
+
+template <class ty>
+int linkedlist<ty>::search(ty element)
+{
+    Node<ty> *tmp = this->HeadrefS;
+    int k = 0;
+    bool find = false;
+
+    while (tmp != NULL)
+    {
+        if (tmp->getdata() == element)
+        {
+            find = true;
+            break;
+        }
+        tmp = tmp->next;
+        k++;
+    }
+
+    if (find)
+    {
+        return k;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+template <class ty>
+linkedlist<ty>::~linkedlist()
+{
+
+    while (this->HeadrefS != NULL)
+    {
+        this->pop_front();
+    }
 };
+
 //lista doblemente ligada
 template <class t>
 class linkedlistD
@@ -499,6 +567,13 @@ public:
     void pop_front();
 
     void pop_back();
+
+    //funciones para merge sort
+    void sort();
+
+    NodeD<t> *split(NodeD<t> *hd);
+    NodeD<t> *merge(NodeD<t> *flist, NodeD<t> *slist);
+    NodeD<t> *mergesort(NodeD<t> *hd);
 
     ~linkedlistD();
 };
@@ -548,17 +623,167 @@ void linkedlistD<t>::push(t Data)
 template <class t>
 void linkedlistD<t>::append(t Data)
 {
+    NodeD<t> *tmp = NULL;
+    if (this->HeadrefD == NULL)
+    {
+        this->append(Data);
+    }
+    else
+    {
+        tmp = this->TailrefD;
+
+        this->nodes = new NodeD<t>();
+        this->nodes->changedata(Data);
+
+        tmp->next = this->nodes;
+        this->nodes->prev = tmp;
+        this->TailrefD = tmp->next;
+        this->sz += 1;
+        this->emptys = false;
+    }
 }
 
-//template <class t>
+template <class t>
+void linkedlistD<t>::insert(int index, t Data)
+{
+    NodeD<t> *tmp = NULL, *prv = NULL;
+    NodeD<t> *ftail = this->HeadrefD;
+    int k = 0;
 
-//template <class t>
+    if (index == 0)
+        this->push(Data);
+    else if (index == this->sz - 1)
+        this->append(Data);
+    else
+    {
+        tmp = this->HeadrefD;
+        this->nodes = new NodeD<t>();
+        this->nodes->changedata(Data);
 
-//template <class t>
+        while (tmp != NULL && k <= index)
+        {
+            if (k == index)
+                break;
+            tmp = tmp->next;
+            k++;
+        }
+        prv = tmp->prev;
+        prv->next = this->nodes;
+        this->nodes->prev = prv;
+        this->nodes->next = tmp;
+        tmp->prev = this->nodes;
 
-//template <class t>
+        this->sz += 1;
+        this->emptys = false;
 
-//template <class t>
+        while (ftail->next != NULL)
+        {
+            ftail = ftail->next;
+        }
+        this->TailrefD = ftail;
+    }
+}
+
+template <class t>
+NodeD<t> *linkedlistD<t>::head()
+{
+    return this->HeadrefD;
+}
+
+template <class t>
+NodeD<t> *linkedlistD<t>::tail()
+{
+    return this->TailrefD;
+}
+
+template <class t>
+NodeD<t> *linkedlistD<t>::at(int index)
+{
+    NodeD<t> *tmp = this->HeadrefD;
+    int k = 0;
+
+    if (index == 0)
+        //para ingresar el primer elemento
+        return this->HeadrefD;
+    if (index == this->sz - 1 || index == -1)
+        //para ingresar al ultimo elemento puedes usar el indice -1 o el tamaño total de la lista.
+        return this->TailrefD;
+    while (k < index && tmp != NULL)
+    { //para acceder a otra posicion
+        tmp = tmp->next;
+        k++;
+    }
+    tmp->showdata(); // eliminalo si quieres
+    return tmp;
+}
+
+template <class t>
+bool linkedlistD<t>::empty()
+{
+    return this->emptys;
+}
+
+template <class t>
+int linkedlistD<t>::listsize()
+{
+    return this->sz;
+}
+
+template <class t>
+NodeD<t> *linkedlistD<t>::split(NodeD<t> *hd)
+{
+    NodeD<t> *fast = hd, *slow = hd, *tmp = NULL;
+    while (fast->next && fast->next->next)
+    {
+        fast = fast->next->next;
+        slow = fast->next;
+    }
+    tmp = slow->next;
+    slow->next = NULL;
+    return tmp;
+}
+
+template <class t>
+NodeD<t> *linkedlistD<t>::merge(NodeD<t> *flist, NodeD<t> *slist)
+{
+    if (!flist)
+        return slist;
+    if (!slist)
+        return flist;
+
+    if (flist->getdata() < slist->getdata())
+    {
+        flist->next = merge(flist->next, slist);
+        flist->next->prev = flist;
+        flist->prev = NULL;
+        return flist;
+    }
+    else
+    {
+        slist->next = merge(flist, slist->next);
+        slist->next->prev = slist;
+        slist->prev = NULL;
+        return slist;
+    }
+}
+
+template <class t>
+NodeD<t> *linkedlistD<t>::mergesort(NodeD<t> *hd)
+{
+    NodeD<t> *tmp = NULL;
+    if (this->HeadrefD == NULL || this->HeadrefD->next == NULL)
+        return this->HeadrefD;
+    tmp = this->split(hd);
+    hd = mergesort(hd);
+    tmp = mergesort(tmp);
+    return merge(hd, tmp);
+}
+
+template <class t>
+void linkedlistD<t>::sort()
+{
+    this->mergesort(this->HeadrefD);
+}
 
 template <class t>
 void linkedlistD<t>::printlist()
@@ -586,7 +811,50 @@ void linkedlistD<t>::printlist()
 };
 
 template <class t>
-linkedlistD<t>::~linkedlistD(){};
+void linkedlistD<t>::pop_front()
+{
+    NodeD<t> *tmp = NULL;
+
+    if (this->HeadrefD == NULL)
+        return;
+    else
+    {
+        tmp = this->HeadrefD;
+        this->HeadrefD = this->HeadrefD->next;
+        delete tmp;
+        this->HeadrefD->prev = NULL;
+        this->sz -= 1;
+        if (this->sz == 0)
+            this->emptys = true;
+    }
+}
+
+template <class t>
+void linkedlistD<t>::pop_back()
+{
+    NodeD<t> *tmp = this->TailrefD, *prev = NULL;
+    if (this->TailrefD == NULL)
+        return;
+    else
+    {
+        prev = tmp->prev;
+        prev->next = NULL;
+        this->TailrefD = prev;
+        delete tmp;
+        this->sz -= 1;
+        if (this->sz == 0)
+            this->emptys = true;
+    }
+}
+
+template <class t>
+linkedlistD<t>::~linkedlistD()
+{
+    /*while (this->HeadrefD != NULL)
+    {
+        this->pop_front();
+    }*/
+}
 
 int main(int argc, char const *argv[])
 {
@@ -599,7 +867,13 @@ int main(int argc, char const *argv[])
     listadoble.push(18);
     listadoble.push(17);
     listadoble.push(16);
+    listadoble.append(-1);
     listadoble.push(15);
+    listadoble.insert(2, 10000);
+    listadoble.at(2);
+    listadoble.printlist();
+    //listadoble.pop_front();
+    listadoble.pop_back();
     listadoble.printlist();
 
     /*L.push(15);
@@ -614,6 +888,9 @@ int main(int argc, char const *argv[])
     L.push(10000);
     L.insert(1, -99);
     L.insert_after(0, -100);
+    std::cout << L.search(500) << "\n";
+    L.printlist();
+    L.del(3);
     L.printlist();
     L.pop_back();
     L.printlist();
