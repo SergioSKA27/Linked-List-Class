@@ -171,6 +171,8 @@ public:
 
     void del(int index); //elimina el elemento del indice proporcionado
 
+    void clear(); //elimina todos los elementos de la lista
+
     void search_and_del(ty element); //busca el elemento lo elimina
 
     int search(ty element); //busca un elemento y retorna su posicion(indice), si no retorna -1
@@ -181,8 +183,9 @@ public:
 
     //operadores
 
-    linkedlist<ty> &operator=(const linkedlist<ty> list); //copiar una lista en otra
-    linkedlist<ty> &operator+(const linkedlist<ty> list); //operador union(añade una lista a la actual)
+    linkedlist<ty> &operator=(const linkedlist<ty> &list); //copiar una lista en otra
+    linkedlist<ty> &operator+(const linkedlist<ty> &list); //operador union(añade una lista a la actual)
+    bool operator==(const linkedlist<ty> &list) const;     //compara si dos listas son iguales
 
     ~linkedlist();
 };
@@ -635,21 +638,141 @@ void linkedlist<ty>::reverselist()
     }
 }
 //.............................................................................................
-//OPERADORES
 template <class ty>
-linkedlist<ty> &linkedlist<ty>::operator=(linkedlist<ty> list)
+linkedlist<ty> linkedlist<ty>::reverse()
 {
+    linkedlist<ty> reversel;
+    Node<ty> *tmp = NULL, *nwhead = this->TailrefS, *nwtail = NULL;
+    Node<ty> *aux = NULL, *prev = NULL;
+    int k, i = 2;
 
     if (this->emptys)
     {
-        for (int i = 0; i < list.listsize(); i++)
+        return reversel;
+    }
+
+    nwtail = this->HeadrefS;
+    tmp = nwtail;
+    reversel.append(nwhead->getdata());
+
+    while (tmp != NULL)
+    {
+        if (i > this->size)
+            break;
+        tmp = nwtail;
+        k = 0;
+
+        while (tmp->next != NULL)
         {
-            this->append(list.at(i)->getdata());
+            if (k == this->size - i)
+                break;
+            tmp = tmp->next;
+            k++;
         }
+        reversel.append(tmp->getdata());
+        i++;
+    }
+
+    reversel.printlist(); //eliminalo si quieres
+
+    return reversel;
+}
+//.............................................................................................
+template <class ty>
+void linkedlist<ty>::clear()
+{ //elimina todos los elementos de la lista
+    Node<ty> *tmp = NULL, *it = NULL, *aux = NULL;
+
+    if (this->emptys)
+    { //si la lista esta vacia
+        return;
+    }
+    tmp = this->HeadrefS;
+    it = tmp->next;
+
+    while (tmp != NULL)
+    { //eliminamos el elemento en cada iteracion
+
+        aux = tmp;       //guardamos la direccion del elemento
+        tmp = tmp->next; //iteramos al sig.
+        delete aux;      //eliminamos el elemento previo
+    }
+
+    this->HeadrefS = tmp;
+    this->TailrefS = tmp;
+    this->emptys = true;
+    this->size = 0;
+}
+//OPERADORES
+template <class ty>
+linkedlist<ty> &linkedlist<ty>::operator=(const linkedlist<ty> &lst)
+{ //operador de asignacion
+    Node<ty> *tmp = lst.HeadrefS;
+    if (this->emptys)
+    { //si la lista esta vacia
+        while (tmp != NULL)
+        {
+            this->append(tmp->getdata());
+            tmp = tmp->next;
+        }
+        return *this;
+    }
+    else
+    { //si la lista no esta vacia eliminamos lo que tenga y remplazamos con la nueva lista(lst)
+        this->clear();
+        while (tmp != NULL)
+        {
+            this->append(tmp->getdata());
+            tmp = tmp->next;
+        }
+        return *this;
+    }
+}
+
+template <class ty>
+linkedlist<ty> &linkedlist<ty>::operator+(const linkedlist<ty> &lst)
+{
+    Node<ty> *nxtail = lst.HeadrefS, *nwtail = lst.TailrefS;
+
+    if (lst.emptys)
+    {
+        return *this;
+    }
+    else
+    {
+        while (nxtail != NULL)
+        {
+            this->append(nxtail->getdata());
+            this->size += 1;
+            nxtail = nxtail->next;
+        }
+        this->TailrefS = nwtail;
 
         return *this;
     }
-    return *this;
+}
+
+template <class ty>
+bool linkedlist<ty>::operator==(const linkedlist<ty> &lst) const
+{
+    Node<ty> *tmp = this->HeadrefS, *cmp = lst.HeadrefS;
+    int s = 0;
+
+    if (this->size != lst.size) //si los tamaños de la lista son distintos
+        return false;
+
+    while (tmp != NULL)
+    {
+        if (tmp->getdata() == cmp->getdata())
+            s++;
+        tmp = tmp->next;
+        cmp = cmp->next;
+    }
+
+    if (s == this->size) //si tiene los mismos elementos en orden
+        return true;
+    else
+        return false;
 }
 
 //.............................................................................................
@@ -704,7 +827,11 @@ public:
 
     void del(int index);
 
+    void search_and_del(t element);
+
     void search(t element);
+
+    void reverselist();
 
     //funciones para merge sort
     void sort();
@@ -990,9 +1117,24 @@ int main(int argc, char const *argv[])
     L.push(10000);
     L.insert(1, -99);
     L.insert_after(0, -100);
-    //std::cout << L.search(500) << "\n";
+    L.listsize();
+    Lcopy = L;
+    listf = L;
+    std::cout << ((Lcopy == listf) ? "si" : "no") << "\n";
+    L = listf + Lcopy;
+    std::cout << ((L == listf) ? "si" : "no") << "\n";
+    std::cout << L.listsize() << "\n";
+    L.printlist();
+    Lcopy.printlist();
+    L.clear();
+    L.empty();
+    L.push(1);
+    L.empty();
+    L.printlist();
+    /*//std::cout << L.search(500) << "\n";
     //L.printlist();
     //L.reverselist();
+    L.reverse();
     L.printlist();
     L.search_and_del(500);
     L.printlist();
@@ -1022,7 +1164,7 @@ int main(int argc, char const *argv[])
     List2.printlist();
     list.empty();
     listf.insert(0, 1);
-    listf.printlist();
+    listf.printlist();*/
     return 0;
 }
 
