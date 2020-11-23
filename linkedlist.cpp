@@ -143,7 +143,11 @@ private:
     Node<ty> *nde;      // nodos simples
 
 public:
+    //CONSTRUCTORES
+
     linkedlist();
+
+    //METODOS
 
     void push(ty Data); //colocar un elemento al principio de la lista
 
@@ -163,7 +167,7 @@ public:
 
     int listsize(); //tamaño de la lista
 
-    virtual void printlist(); //imprimir lista
+    void printlist(); //imprimir lista
 
     void pop_front(); //elimina el elemento al principio de la lista.
 
@@ -181,11 +185,17 @@ public:
 
     linkedlist<ty> reverse(); //retorna la lista invertida y conserva la original
 
-    //operadores
+    //OPERADORES
 
     linkedlist<ty> &operator=(const linkedlist<ty> &list); //copiar una lista en otra
+
     linkedlist<ty> &operator+(const linkedlist<ty> &list); //operador union(añade una lista a la actual)
-    bool operator==(const linkedlist<ty> &list) const;     //compara si dos listas son iguales
+
+    bool operator==(const linkedlist<ty> &list) const; //compara si dos listas son iguales
+
+    ty operator[](const int &index); //operador de acceso con corchetes
+
+    //DESTRUCTOR
 
     ~linkedlist();
 };
@@ -219,7 +229,7 @@ void linkedlist<ty>::push(ty Data)
     if (size == 1)
         this->TailrefS = this->nde;
     else
-    {
+    { //buscamos el tail(final de la lista)
         while (tmp->next != NULL)
         {
             tmp = tmp->next;
@@ -253,7 +263,7 @@ void linkedlist<ty>::append(ty Data)
 template <class ty>
 void linkedlist<ty>::insert(int index, ty Data)
 { //inserta un nodo el el indice señalado
-    Node<ty> *fnext = NULL, *findprev = NULL, *ftail = NULL;
+    Node<ty> *fnext = NULL, *findprev = NULL;
     Node<ty> *tmp = NULL;
     int k = 0;
 
@@ -286,13 +296,6 @@ void linkedlist<ty>::insert(int index, ty Data)
         this->nde->next = fnext;    // el sig. del nuevo nodo es el sig. del previo
         this->size += 1;            //aumentamos el tamaño
         this->emptys = false;
-
-        /*ftail = this->HeadrefS;
-        while (ftail->next != NULL)
-        { //buscamos el nuevo tail
-            ftail = ftail->next;
-        }
-        this->TailrefS = ftail; //actualizamos el nuevo tail*/
     }
 }
 //.............................................................................................
@@ -445,7 +448,7 @@ void linkedlist<ty>::pop_front()
 template <class ty>
 void linkedlist<ty>::pop_back()
 { //elimina el elemento al final de la lista
-    Node<ty> *tmp = NULL, *fnwt = NULL, *prev = NULL;
+    Node<ty> *tmp = NULL, *prev = NULL;
     int k = 0;
 
     if (this->TailrefS == NULL) //si la lista esta vacia
@@ -459,14 +462,9 @@ void linkedlist<ty>::pop_back()
             prev = prev->next;
             k++;
         }
-        prev->next = NULL; //quitamos  la referencia al sig.
-        delete tmp;        //eliminamos el ultimo
-        this->size -= 1;   //reducimos el tamaño de la lista
-        /*fnwt = this->HeadrefS;
-        while (fnwt->next != NULL)
-        {
-            fnwt = fnwt->next;
-        }*/
+        prev->next = NULL;     //quitamos  la referencia al sig.
+        delete tmp;            //eliminamos el ultimo
+        this->size -= 1;       //reducimos el tamaño de la lista
         this->TailrefS = prev; //el nuevo tail es el previo al ultimo
     }
 }
@@ -653,24 +651,25 @@ linkedlist<ty> linkedlist<ty>::reverse()
 
     nwtail = this->HeadrefS;
     tmp = nwtail;
-    reversel.append(nwhead->getdata());
+    reversel.append(nwhead->getdata()); //añadimos el ultimo a la lista
 
     while (tmp != NULL)
     {
         if (i > this->size)
-            break;
+            break; //detenemos cuando la iteracion sea mayor que el tamaño de la lista
         tmp = nwtail;
         k = 0;
 
         while (tmp->next != NULL)
-        {
+        { //recorremos la lista y buscamos el penultimo
             if (k == this->size - i)
                 break;
             tmp = tmp->next;
             k++;
         }
-        reversel.append(tmp->getdata());
-        i++;
+        reversel.append(tmp->getdata()); //lo ponemos en la lista
+
+        i++; //ahora en la sig. iteracion buscamos el que esta antes del penultimo y asi sucesivamente
     }
 
     reversel.printlist(); //eliminalo si quieres
@@ -703,6 +702,7 @@ void linkedlist<ty>::clear()
     this->emptys = true;
     this->size = 0;
 }
+//.............................................................................................
 //OPERADORES
 template <class ty>
 linkedlist<ty> &linkedlist<ty>::operator=(const linkedlist<ty> &lst)
@@ -728,7 +728,7 @@ linkedlist<ty> &linkedlist<ty>::operator=(const linkedlist<ty> &lst)
         return *this;
     }
 }
-
+//---------------------------------------------------------------------------------------------
 template <class ty>
 linkedlist<ty> &linkedlist<ty>::operator+(const linkedlist<ty> &lst)
 {
@@ -751,7 +751,7 @@ linkedlist<ty> &linkedlist<ty>::operator+(const linkedlist<ty> &lst)
         return *this;
     }
 }
-
+//---------------------------------------------------------------------------------------------
 template <class ty>
 bool linkedlist<ty>::operator==(const linkedlist<ty> &lst) const
 {
@@ -773,6 +773,20 @@ bool linkedlist<ty>::operator==(const linkedlist<ty> &lst) const
         return true;
     else
         return false;
+}
+//---------------------------------------------------------------------------------------------
+template <class ty>
+ty linkedlist<ty>::operator[](const int &index)
+{
+    if ((index > this->size - 1 || index < 0) && index != -1) //si el indice esta fuera de rango
+        throw std::out_of_range("invalid  index \n");
+    else
+    {
+        if (index == -1) //con el indice -1 accedemos al final de la lista
+            return this->TailrefS->getdata();
+        else
+            return this->at(index)->getdata();
+    }
 }
 
 //.............................................................................................
@@ -827,11 +841,15 @@ public:
 
     void del(int index);
 
+    void clear();
+
     void search_and_del(t element);
 
     void search(t element);
 
     void reverselist();
+
+    linkedlistD<t> reverse();
 
     //funciones para merge sort
     void sort();
@@ -1125,7 +1143,9 @@ int main(int argc, char const *argv[])
     std::cout << ((L == listf) ? "si" : "no") << "\n";
     std::cout << L.listsize() << "\n";
     L.printlist();
+    std::cout << L[4] << "pos 5 \n";
     Lcopy.printlist();
+
     L.clear();
     L.empty();
     L.push(1);
