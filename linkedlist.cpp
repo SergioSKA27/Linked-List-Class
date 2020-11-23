@@ -10,7 +10,7 @@
 Solamente Dios y yo sabiamos lo que haciamos al escribir este codigo, 
 ahora solo Dios lo sabe , Suerte si intentas modificarlo :). 
 */
-//node class
+//NODO SIMPLE
 template <class type>
 class Node
 {
@@ -32,43 +32,43 @@ public:
 
     ~Node();
 };
-
+//.............................................................................................
 template <class type>
 Node<type>::Node(type Data)
 {
     this->Data = Data;
     this->next = NULL;
 };
-
+//.............................................................................................
 template <class type>
 Node<type>::Node()
 {
     this->next = NULL;
 };
-
+//.............................................................................................
 template <class type>
 Node<type> &Node<type>::changedata(type newData)
 { //cambia los datos del nodo
     Data = newData;
     return *this;
 };
-
+//.............................................................................................
 template <class type>
 void Node<type>::showdata()
 { //muestra los datos del nodo
     std::cout << this->Data << std::endl;
 };
-
+//.............................................................................................
 template <class type>
 type Node<type>::getdata()
 { //retorna la data como valor
     return this->Data;
 };
-
+//.............................................................................................
 template <class type>
 Node<type>::~Node(){};
-
-// Nodo doble
+//#############################################################################################
+// NODO DOBLE
 template <class tp>
 class NodeD
 {
@@ -91,7 +91,7 @@ public:
 
     ~NodeD();
 };
-
+//.............................................................................................
 template <class tp>
 NodeD<tp>::NodeD(tp Data)
 {
@@ -99,38 +99,38 @@ NodeD<tp>::NodeD(tp Data)
     this->next = NULL;
     this->prev = NULL;
 };
-
+//.............................................................................................
 template <class tp>
 NodeD<tp>::NodeD()
 {
     this->next = NULL;
     this->prev = NULL;
 };
-
+//.............................................................................................
 template <class tp>
 NodeD<tp> &NodeD<tp>::changedata(tp newData)
 { //cambia los datos del nodo
     Data = newData;
     return *this;
 };
-
+//.............................................................................................
 template <class tp>
 void NodeD<tp>::showdata()
 { //muestra los datos del nodo
     std::cout << this->Data << std::endl;
 };
-
+//.............................................................................................
 template <class tp>
 tp NodeD<tp>::getdata()
 { //retorna la data como valor
     return this->Data;
 };
-
+//.............................................................................................
 template <class tp>
 NodeD<tp>::~NodeD(){};
 
-//linked list class
-
+//#############################################################################################
+//LISTA SIMPLEMENTE LIGADA
 template <class ty>
 class linkedlist
 {
@@ -179,9 +179,14 @@ public:
 
     linkedlist<ty> reverse(); //retorna la lista invertida y conserva la original
 
+    //operadores
+
+    linkedlist<ty> &operator=(const linkedlist<ty> list); //copiar una lista en otra
+    linkedlist<ty> &operator+(const linkedlist<ty> list); //operador union(añade una lista a la actual)
+
     ~linkedlist();
 };
-
+//.............................................................................................
 template <class ty>
 linkedlist<ty>::linkedlist()
 { // el constructor toma como parametros el tipo de lista que vamos a implementar
@@ -191,7 +196,7 @@ linkedlist<ty>::linkedlist()
     this->nde = NULL;
     this->emptys = true;
 };
-
+//.............................................................................................
 template <class ty>
 void linkedlist<ty>::push(ty Data)
 { // inserta un elemento al principio de la lista
@@ -219,7 +224,7 @@ void linkedlist<ty>::push(ty Data)
         this->TailrefS = tmp;
     }
 };
-
+//.............................................................................................
 template <class ty>
 void linkedlist<ty>::append(ty Data)
 { //inserta elementos al final de la lista
@@ -241,7 +246,7 @@ void linkedlist<ty>::append(ty Data)
         this->emptys = false;
     }
 };
-
+//.............................................................................................
 template <class ty>
 void linkedlist<ty>::insert(int index, ty Data)
 { //inserta un nodo el el indice señalado
@@ -287,7 +292,7 @@ void linkedlist<ty>::insert(int index, ty Data)
         this->TailrefS = ftail; //actualizamos el nuevo tail*/
     }
 }
-
+//.............................................................................................
 template <class ty>
 void linkedlist<ty>::insert_after(int index, ty Data)
 { //inserta un nodo despues del indice
@@ -330,7 +335,7 @@ void linkedlist<ty>::insert_after(int index, ty Data)
         this->TailrefS = ftail; //actualizamos el nuevo tail
     }
 }
-
+//.............................................................................................
 template <class ty>
 Node<ty> *linkedlist<ty>::head()
 { // retorna un puntero a head
@@ -338,7 +343,7 @@ Node<ty> *linkedlist<ty>::head()
     this->HeadrefS->showdata(); // eliminalo si quieres
     return this->HeadrefS;
 };
-
+//.............................................................................................
 template <class ty>
 Node<ty> *linkedlist<ty>::tail()
 { //retorna un puntero a tail(final de la lista)
@@ -346,7 +351,7 @@ Node<ty> *linkedlist<ty>::tail()
     this->TailrefS->showdata(); // eliminalo si quieres
     return this->TailrefS;
 };
-
+//.............................................................................................
 template <class ty>
 Node<ty> *linkedlist<ty>::at(int index)
 { //retorna el elemto de la lista indicado
@@ -370,7 +375,7 @@ Node<ty> *linkedlist<ty>::at(int index)
     tmp->showdata(); // eliminalo si quieres
     return tmp;
 };
-
+//.............................................................................................
 template <class ty>
 bool linkedlist<ty>::empty()
 { //regresa true si la lista esta vacia
@@ -385,13 +390,13 @@ bool linkedlist<ty>::empty()
         return false;
     }
 };
-
+//.............................................................................................
 template <class ty>
 int linkedlist<ty>::listsize()
 { //retorna el tamaño de la lista
     return this->size;
 };
-
+//.............................................................................................
 template <class ty>
 void linkedlist<ty>::printlist()
 { // imprime la lista
@@ -399,23 +404,24 @@ void linkedlist<ty>::printlist()
     int k = 0;
 
     if (tmp == NULL)
-    {
+    { //si la lista esta vacia
         std::cout << "empty list" << std::endl;
         return;
     }
 
     while (tmp != NULL)
-    {
-        if (k == 0)
+    { //recorremos la lista e imprimimos los elementos
+
+        if (k == 0) //si es el primer elemento lo imprimimos
             std::cout << tmp->getdata();
-        else
+        else //si no ponemos una flecha antes de imprimir
             std::cout << "-> " << tmp->getdata();
         tmp = tmp->next;
         k++;
     }
     std::cout << std::endl;
 };
-
+//.............................................................................................
 template <class ty>
 void linkedlist<ty>::pop_front()
 { //elimina un elemento al principio de la lista
@@ -424,68 +430,68 @@ void linkedlist<ty>::pop_front()
         return;
     else
     {
-        tmp = this->HeadrefS;
-        this->HeadrefS = this->HeadrefS->next;
-        delete tmp;
-        this->size -= 1;
-        if (this->HeadrefS == NULL) // si la lista esta vacia
+        tmp = this->HeadrefS;                  //guardamos el head actual
+        this->HeadrefS = this->HeadrefS->next; //el nuevo head es el sig. del head actual(tmp)
+        delete tmp;                            //eliminamos  el head(tmp)
+        this->size -= 1;                       //reducimos el tamaño de la lista
+        if (this->HeadrefS == NULL)            // si la lista esta vacia
             this->emptys = true;
     }
 }
-
+//.............................................................................................
 template <class ty>
 void linkedlist<ty>::pop_back()
 { //elimina el elemento al final de la lista
     Node<ty> *tmp = NULL, *fnwt = NULL, *prev = NULL;
     int k = 0;
 
-    if (this->TailrefS == NULL)
+    if (this->TailrefS == NULL) //si la lista esta vacia
         return;
     else
     {
         prev = this->HeadrefS;
         tmp = this->TailrefS;
         while (prev != NULL && k < this->size - 2)
-        {
+        { //buscamos el previo al ultimo
             prev = prev->next;
             k++;
         }
-        prev->next = NULL;
-        delete tmp;
-        this->size -= 1;
-        fnwt = this->HeadrefS;
+        prev->next = NULL; //quitamos  la referencia al sig.
+        delete tmp;        //eliminamos el ultimo
+        this->size -= 1;   //reducimos el tamaño de la lista
+        /*fnwt = this->HeadrefS;
         while (fnwt->next != NULL)
         {
             fnwt = fnwt->next;
-        }
-        this->TailrefS = fnwt;
+        }*/
+        this->TailrefS = prev; //el nuevo tail es el previo al ultimo
     }
 }
-
+//.............................................................................................
 template <class ty>
 void linkedlist<ty>::del(int index)
-{
+{ //elimina el elememto en la posicion indicada
     Node<ty> *tmp = NULL, *prev = NULL;
     int k = 0;
 
     if (index == 0)
-    {
+    { //si quieren eliminar el primero
         this->pop_front();
         return;
     }
     if (index == this->size - 1)
-    {
+    { //si el elemeto elemento es el ultimo
         this->pop_back();
         return;
     }
     tmp = this->HeadrefS;
 
-    while (k <= this->size && tmp != NULL)
-    {
+    while (tmp != NULL)
+    { //iteramos la lista
         if (k == index - 1)
-            prev = tmp;
+            prev = tmp; //guardamos el previo al elemento a eliminar
         if (k == index)
-            break;
+            break; //cuando llegamos al elemento detenemos el ciclo
 
         tmp = tmp->next;
         k++;
@@ -495,30 +501,32 @@ void linkedlist<ty>::del(int index)
     delete tmp;
     this->size -= 1;
 }
-
+//.............................................................................................
 template <class ty>
 void linkedlist<ty>::search_and_del(ty element)
-{
+{ //busca un elemento si lo encuentra lo elimina
     Node<ty> *tmp = this->HeadrefS, *prev = NULL;
     bool found = false;
 
     if (this->HeadrefS->getdata() == element)
-    {
+    { //si el elemento es el primero de la lista
         this->pop_front();
         return;
     }
     if (this->TailrefS->getdata() == element)
-    {
+    { //si el elemento es el ultimo de la lista
         this->pop_back();
+        return;
     }
 
     while (tmp != NULL)
     {
         if (tmp->next->getdata() == element)
+            //si el sig. es el elemento guardamos como previo
             prev = tmp;
 
         if (tmp->getdata() == element)
-        {
+        { //si encontramos el elemento rompemos el ciclo
             found = true;
             break;
         }
@@ -531,23 +539,32 @@ void linkedlist<ty>::search_and_del(ty element)
     }
     else
     {
-        prev->next = tmp->next;
-        delete tmp;
-        this->size -= 1;
+        prev->next = tmp->next; //el sig. del previo es el sig. del elemento
+        delete tmp;             //eliminamos el elemento
+        this->size -= 1;        //reduciomos el tamaño
     }
 }
-
+//.............................................................................................
 template <class ty>
 int linkedlist<ty>::search(ty element)
-{
+{ //busca un elemento si lo encuentra retorna su posicion sino retorna -1
     Node<ty> *tmp = this->HeadrefS;
     int k = 0;
     bool found = false;
 
+    if (element == this->HeadrefS->getdata())
+    { //si el elemento es el primero de la lista
+        return 0;
+    }
+    if (element == this->TailrefS->getdata())
+    { //si el elemento es el ultimo de la lista
+        return this->size - 1;
+    }
+
     while (tmp != NULL)
-    {
+    { //iteramos la lista
         if (tmp->getdata() == element)
-        {
+        { //si encontramos el elemento rompemos el ciclo
             found = true;
             break;
         }
@@ -556,69 +573,86 @@ int linkedlist<ty>::search(ty element)
     }
 
     if (found)
-    {
+    { //si encontramos el elemento retornamos su posicion(k)
         return k;
     }
     else
-    {
+    { //sino retornamos -1
         return -1;
     }
 }
-
+//.............................................................................................
 template <class ty>
 void linkedlist<ty>::reverselist()
-{
+{ //voltea una lista de manera iterativa
     Node<ty> *tmp = NULL, *newhead = this->TailrefS, *newtail = NULL;
     Node<ty> *aux = NULL, *prev = NULL, *it = NULL;
     int k, i = 2;
 
-    if (this->size == 1)
-    {
+    if (this->size == 1 || this->size == 0)
+    { //si la lista esta vacia o solo tiene un elemento
         return;
     }
     else
     {
-        newtail = this->HeadrefS;
+        newtail = this->HeadrefS; //nuevo final
         tmp = newtail;
         it = newhead;
         newhead->next = NULL;
-        it->showdata();
+        //it->showdata();//si quieres ver como se ejecuta el algoritmo quita los comentarios con *
 
         while (newtail->next != NULL)
-        {
-            //if (i > this->size - 1)
-            //    break;
+        { //mientras el sig. del nuevo final no sea nulo iteramos
             tmp = newtail;
             k = 0;
             while (tmp->next != NULL)
-            {
+            { //buscamos el penultimo y antepenultimo elemento
                 if (k == this->size - i)
                 {
-                    tmp->showdata();
+                    //*tmp->showdata();
                     break;
                 }
                 if (k == this->size - i - 1)
                 {
                     prev = tmp;
-                    prev->showdata();
+                    //*prev->showdata();
                 }
                 tmp = tmp->next;
                 k++;
             }
-            it->next = tmp;
-            it->next->next = NULL;
-            prev->next = NULL;
-            it = it->next;
-            //it->showdata();
+            it->next = tmp;        //el sig. del nuevo head es el penultimo
+            it->next->next = NULL; //quitamos la ref. del sig. del penultimo
+            prev->next = NULL;     //quitamos la ref. del sig. del antepenultimo
+            //con lo que se convierte en el nuevo penultimo y el prev. a este
+            //en el nuevo antepenultimo.
+            it = it->next; //itermos el nuevo head
+            //*it->showdata();
             i++;
         }
         it->next = newtail;
         this->HeadrefS = newhead;
         this->TailrefS = newtail;
-        //find tail
     }
 }
+//.............................................................................................
+//OPERADORES
+template <class ty>
+linkedlist<ty> &linkedlist<ty>::operator=(linkedlist<ty> list)
+{
 
+    if (this->emptys)
+    {
+        for (int i = 0; i < list.listsize(); i++)
+        {
+            this->append(list.at(i)->getdata());
+        }
+
+        return *this;
+    }
+    return *this;
+}
+
+//.............................................................................................
 template <class ty>
 linkedlist<ty>::~linkedlist()
 {
@@ -627,8 +661,8 @@ linkedlist<ty>::~linkedlist()
         this->pop_front();
     }
 };
-
-//lista doblemente ligada
+//#############################################################################################
+//LISTA DOBLEMENTE LIGADA
 template <class t>
 class linkedlistD
 {
@@ -677,7 +711,7 @@ public:
 
     ~linkedlistD();
 };
-
+//.............................................................................................
 template <class t>
 linkedlistD<t>::linkedlistD()
 {
@@ -687,7 +721,7 @@ linkedlistD<t>::linkedlistD()
     this->sz = 0;
     this->emptys = true;
 };
-
+//.............................................................................................
 template <class t>
 void linkedlistD<t>::push(t Data)
 {
@@ -719,7 +753,7 @@ void linkedlistD<t>::push(t Data)
         this->TailrefD = tmp;
     }
 };
-
+//.............................................................................................
 template <class t>
 void linkedlistD<t>::append(t Data)
 {
@@ -742,7 +776,7 @@ void linkedlistD<t>::append(t Data)
         this->emptys = false;
     }
 }
-
+//.............................................................................................
 template <class t>
 void linkedlistD<t>::insert(int index, t Data)
 {
@@ -783,19 +817,19 @@ void linkedlistD<t>::insert(int index, t Data)
         this->TailrefD = ftail;
     }
 }
-
+//.............................................................................................
 template <class t>
 NodeD<t> *linkedlistD<t>::head()
 {
     return this->HeadrefD;
 }
-
+//.............................................................................................
 template <class t>
 NodeD<t> *linkedlistD<t>::tail()
 {
     return this->TailrefD;
 }
-
+//.............................................................................................
 template <class t>
 NodeD<t> *linkedlistD<t>::at(int index)
 {
@@ -816,19 +850,19 @@ NodeD<t> *linkedlistD<t>::at(int index)
     tmp->showdata(); // eliminalo si quieres
     return tmp;
 }
-
+//.............................................................................................
 template <class t>
 bool linkedlistD<t>::empty()
 {
     return this->emptys;
 }
-
+//.............................................................................................
 template <class t>
 int linkedlistD<t>::listsize()
 {
     return this->sz;
 }
-
+//.............................................................................................
 template <class t>
 void linkedlistD<t>::sort()
 {
@@ -841,7 +875,7 @@ void linkedlistD<t>::sort()
     tmp = mergesort(tmp);
     this->HeadrefD = tmp;
 }
-
+//.............................................................................................
 template <class t>
 void linkedlistD<t>::printlist()
 {
@@ -866,7 +900,7 @@ void linkedlistD<t>::printlist()
     }
     std::cout << std::endl;
 };
-
+//.............................................................................................
 template <class t>
 void linkedlistD<t>::pop_front()
 {
@@ -885,7 +919,7 @@ void linkedlistD<t>::pop_front()
             this->emptys = true;
     }
 }
-
+//.............................................................................................
 template <class t>
 void linkedlistD<t>::pop_back()
 {
@@ -903,7 +937,7 @@ void linkedlistD<t>::pop_back()
             this->emptys = true;
     }
 }
-
+//.............................................................................................
 template <class t>
 linkedlistD<t>::~linkedlistD()
 {
@@ -928,7 +962,7 @@ int main(int argc, char const *argv[])
 {
 
     linkedlist<int> List2, list; //listas simples
-    linkedlist<float> listf, L;
+    linkedlist<float> listf, L, Lcopy;
     linkedlistD<int> listadoble;
 
     listadoble.push(10);
@@ -957,8 +991,8 @@ int main(int argc, char const *argv[])
     L.insert(1, -99);
     L.insert_after(0, -100);
     //std::cout << L.search(500) << "\n";
-    L.printlist();
-    L.reverselist(); //*
+    //L.printlist();
+    //L.reverselist();
     L.printlist();
     L.search_and_del(500);
     L.printlist();
@@ -971,8 +1005,12 @@ int main(int argc, char const *argv[])
     L.tail();
     L.at(L.listsize() - 1);
     L.append(-1); //tail
+    L.printlist();
     L.push(120);
     L.push(888); //head
+    L.pop_back();
+    //Lcopy = L;
+    //Lcopy.printlist();
     L.printlist();
     L.head();
     L.tail();
