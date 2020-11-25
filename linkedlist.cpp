@@ -212,10 +212,10 @@ linkedlist<ty>::linkedlist()
     this->emptys = true;
 };
 //.............................................................................................
+/*INSERTA UN ELEMENTO AL PRINCIPIO DE LA LISTA*/
 template <class ty>
 void linkedlist<ty>::push(ty Data)
-{ // inserta un elemento al principio de la lista
-
+{
     Node<ty> *tmp = this->HeadrefS;
 
     this->nde = new Node<ty>(); //crea un nuevo nodo
@@ -240,9 +240,10 @@ void linkedlist<ty>::push(ty Data)
     }
 };
 //.............................................................................................
+/*INSERTA UN ELEMENTO AL FINAL DE LA LISTA*/
 template <class ty>
 void linkedlist<ty>::append(ty Data)
-{ //inserta elementos al final de la lista
+{
     Node<ty> *tmp = NULL;
 
     if (this->HeadrefS == NULL && this->TailrefS == NULL)
@@ -262,9 +263,10 @@ void linkedlist<ty>::append(ty Data)
     }
 };
 //.............................................................................................
+/*INSERTA UN EL ELEMENTO EN LA POSICION INDICADA(INDICES EMPIEZAN EN 0)*/
 template <class ty>
 void linkedlist<ty>::insert(int index, ty Data)
-{ //inserta un nodo el el indice señalado
+{
     Node<ty> *fnext = NULL, *findprev = NULL;
     Node<ty> *tmp = NULL;
     int k = 0;
@@ -301,9 +303,10 @@ void linkedlist<ty>::insert(int index, ty Data)
     }
 }
 //.............................................................................................
+/*INSERTA UN ELEMENTO DESPUES DE LA POSICION INDICADA(INDICES EMPIEZAN EN 0)*/
 template <class ty>
 void linkedlist<ty>::insert_after(int index, ty Data)
-{ //inserta un nodo despues del indice
+{
     Node<ty> *fnext = NULL, *findprev = NULL, *ftail = NULL;
     Node<ty> *tmp = NULL;
     int k = 0;
@@ -344,26 +347,26 @@ void linkedlist<ty>::insert_after(int index, ty Data)
     }
 }
 //.............................................................................................
+/*RETORNA UN PUNTERO A HEAD (PRINCIPIO DE LA LISTA)*/
 template <class ty>
 Node<ty> *linkedlist<ty>::head()
-{ // retorna un puntero a head
-
-    this->HeadrefS->showdata(); // eliminalo si quieres
+{
+    //this->HeadrefS->showdata(); // eliminalo si quieres
     return this->HeadrefS;
 };
 //.............................................................................................
+/*RETORNA UN PUNTERO A TAIL(FINAL DE LA LISTA)*/
 template <class ty>
 Node<ty> *linkedlist<ty>::tail()
-{ //retorna un puntero a tail(final de la lista)
-
-    this->TailrefS->showdata(); // eliminalo si quieres
+{
+    //this->TailrefS->showdata(); // eliminalo si quieres
     return this->TailrefS;
 };
 //.............................................................................................
+/*RETORNA UN PUNTERO A LA POSICION INDICADA(INDICES EMPIEZAN EN 0)*/
 template <class ty>
 Node<ty> *linkedlist<ty>::at(int index)
-{ //retorna el elemto de la lista indicado
-    //los indices empiezan en 0
+{
     Node<ty> *tmp = this->HeadrefS;
     int k = 0;
 
@@ -384,30 +387,33 @@ Node<ty> *linkedlist<ty>::at(int index)
     return tmp;
 };
 //.............................................................................................
+/*DETERMINA SI LA LISTA ESTA VACIA*/
 template <class ty>
 bool linkedlist<ty>::empty()
-{ //regresa true si la lista esta vacia
+{
     if (emptys)
     {
-        std::cout << "True\n"; //eliminalo si quieres
+        //std::cout << "True\n"; //eliminalo si quieres
         return true;
     }
     else
     {
-        std::cout << "False\n"; //^same
+        //std::cout << "False\n"; //^same
         return false;
     }
 };
 //.............................................................................................
+/*RETORNA EL TAMAÑO DE LA LISTA*/
 template <class ty>
 int linkedlist<ty>::listsize()
-{ //retorna el tamaño de la lista
+{
     return this->size;
 };
 //.............................................................................................
+/*IMPRIME LA LISTA*/
 template <class ty>
 void linkedlist<ty>::printlist()
-{ // imprime la lista
+{
     Node<ty> *tmp = this->HeadrefS;
     int k = 0;
 
@@ -430,9 +436,10 @@ void linkedlist<ty>::printlist()
     std::cout << std::endl;
 };
 //.............................................................................................
+/*ELIMINA EL PRIMER ELEMENTO DE LA LISTA*/
 template <class ty>
 void linkedlist<ty>::pop_front()
-{ //elimina un elemento al principio de la lista
+{
     Node<ty> *tmp = NULL;
     if (this->HeadrefS == NULL)
         return;
@@ -447,9 +454,10 @@ void linkedlist<ty>::pop_front()
     }
 }
 //.............................................................................................
+/*ELIMINA EL ULTIMO ELEMENTO DE LA LISTA*/
 template <class ty>
 void linkedlist<ty>::pop_back()
-{ //elimina el elemento al final de la lista
+{
     Node<ty> *tmp = NULL, *prev = NULL;
     int k = 0;
 
@@ -471,9 +479,10 @@ void linkedlist<ty>::pop_back()
     }
 }
 //.............................................................................................
+/*ELIMINA EL ELEMENTO EN LA POSICION INDICADA DE LA LISTA*/
 template <class ty>
 void linkedlist<ty>::del(int index)
-{ //elimina el elememto en la posicion indicada
+{
     Node<ty> *tmp = NULL, *prev = NULL;
     int k = 0;
 
@@ -505,9 +514,10 @@ void linkedlist<ty>::del(int index)
     this->size -= 1;
 }
 //.............................................................................................
+/*BUSCA UN ELEMENTO SI LO ENCUENTRA LO ELIMINA*/
 template <class ty>
 void linkedlist<ty>::search_and_del(ty element)
-{ //busca un elemento si lo encuentra lo elimina
+{
     Node<ty> *tmp = this->HeadrefS, *prev = NULL;
     bool found = false;
 
@@ -548,9 +558,10 @@ void linkedlist<ty>::search_and_del(ty element)
     }
 }
 //.............................................................................................
+/*BUSCA UN ELEMENTO SI LO ENCUENTRA RETORNA SU POSICION, DE LO CONTRARIO RETORNA -1 */
 template <class ty>
 int linkedlist<ty>::search(ty element)
-{ //busca un elemento si lo encuentra retorna su posicion sino retorna -1
+{
     Node<ty> *tmp = this->HeadrefS;
     int k = 0;
     bool found = false;
@@ -585,6 +596,7 @@ int linkedlist<ty>::search(ty element)
     }
 }
 //.............................................................................................
+/*INVIERTE UNA LISTA DE FORMA ITERATIVA(LA CAMBIA)*/
 template <class ty>
 void linkedlist<ty>::reverselist()
 { //voltea una lista de manera iterativa
@@ -638,6 +650,7 @@ void linkedlist<ty>::reverselist()
     }
 }
 //.............................................................................................
+/*RETORNA LA LISTA INVERTIDA Y CONSERVA LA ORIGINAL*/
 template <class ty>
 linkedlist<ty> linkedlist<ty>::reverse()
 {
@@ -679,6 +692,7 @@ linkedlist<ty> linkedlist<ty>::reverse()
     return reversel;
 }
 //.............................................................................................
+/*ELIMINA TODOS LOS ELEMENTOS DE LA LISTA*/
 template <class ty>
 void linkedlist<ty>::clear()
 { //elimina todos los elementos de la lista
@@ -1275,6 +1289,7 @@ void linkedlistD<t>::reverselist()
     //this->TailrefD = nwtail;
 }
 //.............................................................................................
+/*RETORNA LA LISTA INVERTIDA*/
 template <class t>
 linkedlistD<t> linkedlistD<t>::reverse()
 {
@@ -1323,7 +1338,7 @@ linkedlistD<t> &linkedlistD<t>::operator=(const linkedlistD<t> &list)
         return *this;
     }
 }
-
+//.............................................................................................
 template <class t>
 linkedlistD<t> &linkedlistD<t>::operator+=(const linkedlistD<t> &list)
 {
@@ -1338,7 +1353,7 @@ linkedlistD<t> &linkedlistD<t>::operator+=(const linkedlistD<t> &list)
     this->sz += list.sz;
     return *this;
 }
-
+//.............................................................................................
 template <class t>
 linkedlistD<t> linkedlistD<t>::operator+(const linkedlistD<t> &list)
 {
@@ -1359,7 +1374,7 @@ linkedlistD<t> linkedlistD<t>::operator+(const linkedlistD<t> &list)
 
     return listU;
 }
-
+//.............................................................................................
 template <class t>
 bool linkedlistD<t>::operator==(const linkedlistD<t> &list) const
 {
@@ -1380,7 +1395,7 @@ bool linkedlistD<t>::operator==(const linkedlistD<t> &list) const
     else
         return false;
 }
-
+//.............................................................................................
 template <class t>
 t linkedlistD<t>::operator[](int index)
 {
@@ -1395,13 +1410,13 @@ t linkedlistD<t>::operator[](int index)
         return this->at(index)->getdata();
     }
 }
-
+//.............................................................................................
 template <class t>
 linkedlistD<t>::~linkedlistD()
 {
     this->clear();
 }
-
+//.............................................................................................
 template <class ti>
 //divide una lista a la mitad
 NodeD<ti> *split(NodeD<ti> *list);
