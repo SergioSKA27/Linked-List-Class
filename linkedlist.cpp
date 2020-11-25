@@ -189,7 +189,9 @@ public:
 
     linkedlist<ty> &operator=(const linkedlist<ty> &list); //copiar una lista en otra
 
-    linkedlist<ty> &operator+(const linkedlist<ty> &list); //operador union(añade una lista a la actual)
+    linkedlist<ty> &operator+=(const linkedlist<ty> &list); //operador union(añade una lista a la actual)
+
+    linkedlist<ty> operator+(const linkedlist<ty> &list); //une dos lista y retorna la lista unida(no modifica las listas unidas)
 
     bool operator==(const linkedlist<ty> &list) const; //compara si dos listas son iguales
 
@@ -730,7 +732,7 @@ linkedlist<ty> &linkedlist<ty>::operator=(const linkedlist<ty> &lst)
 }
 //---------------------------------------------------------------------------------------------
 template <class ty>
-linkedlist<ty> &linkedlist<ty>::operator+(const linkedlist<ty> &lst)
+linkedlist<ty> &linkedlist<ty>::operator+=(const linkedlist<ty> &lst)
 {
     Node<ty> *nxtail = lst.HeadrefS, *nwtail = lst.TailrefS;
 
@@ -751,6 +753,28 @@ linkedlist<ty> &linkedlist<ty>::operator+(const linkedlist<ty> &lst)
         return *this;
     }
 }
+
+template <class ty>
+linkedlist<ty> linkedlist<ty>::operator+(const linkedlist<ty> &lst)
+{
+    linkedlist<ty> listU;
+    Node<ty> *tmp = this->HeadrefS, *tmp2 = lst.HeadrefS;
+
+    while (tmp != NULL)
+    {
+        listU.append(tmp->getdata());
+        tmp = tmp->next;
+    }
+
+    while (tmp2 != NULL)
+    {
+        listU.append(tmp2->getdata());
+        tmp2 = tmp2->next;
+    }
+
+    return listU;
+}
+
 //---------------------------------------------------------------------------------------------
 template <class ty>
 bool linkedlist<ty>::operator==(const linkedlist<ty> &lst) const
@@ -853,10 +877,11 @@ public:
 
     //OPERADORES
 
-    linkedlistD<t> &operator=(const linkedlistD<t> &list);
-    linkedlistD<t> &operator+(const linkedlistD<t> &list);
-    bool operator==(const linkedlistD<t> &list) const;
-    t operator[](int index);
+    linkedlistD<t> &operator=(const linkedlistD<t> &list);  //operador asignacion
+    linkedlistD<t> &operator+=(const linkedlistD<t> &list); //añade una lista a la lista actual
+    linkedlistD<t> operator+(const linkedlistD<t> &list);   //une dos listas y retorna la lista unida
+    bool operator==(const linkedlistD<t> &list) const;      //compara el tamaño y los elementos si todo es igual retorna true
+    t operator[](int index);                                //oprador de acceso con corchetes
 
     //funciones para merge sort
     void sort();
@@ -1300,7 +1325,7 @@ linkedlistD<t> &linkedlistD<t>::operator=(const linkedlistD<t> &list)
 }
 
 template <class t>
-linkedlistD<t> &linkedlistD<t>::operator+(const linkedlistD<t> &list)
+linkedlistD<t> &linkedlistD<t>::operator+=(const linkedlistD<t> &list)
 {
     NodeD<t> *tmp = list.HeadrefD;
 
@@ -1312,6 +1337,27 @@ linkedlistD<t> &linkedlistD<t>::operator+(const linkedlistD<t> &list)
     this->TailrefD = list.TailrefD;
     this->sz += list.sz;
     return *this;
+}
+
+template <class t>
+linkedlistD<t> linkedlistD<t>::operator+(const linkedlistD<t> &list)
+{
+    linkedlistD<t> listU;
+    NodeD<t> *tmp = this->HeadrefD, *tmp2 = list.HeadrefD;
+
+    while (tmp != NULL)
+    {
+        listU.append(tmp->getdata());
+        tmp = tmp->next;
+    }
+
+    while (tmp2 != NULL)
+    {
+        listU.append(tmp2->getdata());
+        tmp2 = tmp2->next;
+    }
+
+    return listU;
 }
 
 template <class t>
