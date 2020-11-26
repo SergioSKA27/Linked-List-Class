@@ -46,6 +46,7 @@ Node<type>::Node()
     this->next = NULL;
 };
 //.............................................................................................
+/*CAMBIA LOS DATOS DE UN NODO*/
 template <class type>
 Node<type> &Node<type>::changedata(type newData)
 { //cambia los datos del nodo
@@ -53,12 +54,14 @@ Node<type> &Node<type>::changedata(type newData)
     return *this;
 };
 //.............................................................................................
+/*MUESTRA LOS DATOS DE UN NODO*/
 template <class type>
 void Node<type>::showdata()
 { //muestra los datos del nodo
     std::cout << this->Data << std::endl;
 };
 //.............................................................................................
+/*RETORNA LOS DATOS DE UN NODO*/
 template <class type>
 type Node<type>::getdata()
 { //retorna la data como valor
@@ -92,7 +95,9 @@ public:
     ~NodeD();
 };
 //.............................................................................................
+
 template <class tp>
+/*CONSTRUCTOR BASE*/
 NodeD<tp>::NodeD(tp Data)
 {
     this->Data = Data;
@@ -100,6 +105,7 @@ NodeD<tp>::NodeD(tp Data)
     this->prev = NULL;
 };
 //.............................................................................................
+/*CONSTRUCTOR VACIO*/
 template <class tp>
 NodeD<tp>::NodeD()
 {
@@ -107,6 +113,7 @@ NodeD<tp>::NodeD()
     this->prev = NULL;
 };
 //.............................................................................................
+/*CAMBIA LOS DATOS DE UN NODO*/
 template <class tp>
 NodeD<tp> &NodeD<tp>::changedata(tp newData)
 { //cambia los datos del nodo
@@ -114,12 +121,14 @@ NodeD<tp> &NodeD<tp>::changedata(tp newData)
     return *this;
 };
 //.............................................................................................
+/*MUESTRA LOS DATOS DE UN NODO*/
 template <class tp>
 void NodeD<tp>::showdata()
 { //muestra los datos del nodo
     std::cout << this->Data << std::endl;
 };
 //.............................................................................................
+/*RETORNA LOS DATOS DE UN NODO*/
 template <class tp>
 tp NodeD<tp>::getdata()
 { //retorna la data como valor
@@ -720,9 +729,10 @@ void linkedlist<ty>::clear()
 }
 //.............................................................................................
 //OPERADORES
+/*OPRADOR DE ASIGNACION*/
 template <class ty>
 linkedlist<ty> &linkedlist<ty>::operator=(const linkedlist<ty> &lst)
-{ //operador de asignacion
+{
     Node<ty> *tmp = lst.HeadrefS;
     if (this->emptys)
     { //si la lista esta vacia
@@ -745,6 +755,7 @@ linkedlist<ty> &linkedlist<ty>::operator=(const linkedlist<ty> &lst)
     }
 }
 //---------------------------------------------------------------------------------------------
+/*AÑADE LOS ELEMENTOS DE OTRA LISTA A LA LISTA ACTUAL CONSERVANDO LOS ELEMENTOS DE LA LISTA(SINTAX: list += list2)  */
 template <class ty>
 linkedlist<ty> &linkedlist<ty>::operator+=(const linkedlist<ty> &lst)
 {
@@ -767,7 +778,7 @@ linkedlist<ty> &linkedlist<ty>::operator+=(const linkedlist<ty> &lst)
         return *this;
     }
 }
-
+/*SUMA DOS LISTAS(LAS UNE) SIN MODIFICAR LAS LISTAS UNIDAS (SINTAX: ListC = ListA + ListB)*/
 template <class ty>
 linkedlist<ty> linkedlist<ty>::operator+(const linkedlist<ty> &lst)
 {
@@ -788,8 +799,8 @@ linkedlist<ty> linkedlist<ty>::operator+(const linkedlist<ty> &lst)
 
     return listU;
 }
-
 //---------------------------------------------------------------------------------------------
+/*COMPARA DOS LISTAS POR TAMAÑO Y LOS ELEMENTOS QUE POSEE CADA UNA*/
 template <class ty>
 bool linkedlist<ty>::operator==(const linkedlist<ty> &lst) const
 {
@@ -813,6 +824,7 @@ bool linkedlist<ty>::operator==(const linkedlist<ty> &lst) const
         return false;
 }
 //---------------------------------------------------------------------------------------------
+/*OPRADOR DE ACCESO CON CORCHETES (LOS INDICES EMPIEZAN EN 0)*/
 template <class ty>
 ty linkedlist<ty>::operator[](const int &index)
 {
@@ -836,13 +848,12 @@ linkedlist<ty>::~linkedlist()
         this->pop_front();
     }
 };
-//#############################################################################################
+
 //LISTA DOBLEMENTE LIGADA
 template <class t>
 class linkedlistD
 {
 private:
-    //tipo de lista
     int sz; //tamaño de la lista
     bool emptys;
 
@@ -898,6 +909,8 @@ public:
     t operator[](int index);                                //oprador de acceso con corchetes
 
     //funciones para merge sort
+    void split(int part); //divide una lista a la mitad y devuelve la mitad solicitad(1 o 2)
+
     void sort();
 
     ~linkedlistD();
@@ -1057,14 +1070,18 @@ int linkedlistD<t>::listsize()
 template <class t>
 void linkedlistD<t>::sort()
 {
-    NodeD<t> *tmp = NULL;
+    NodeD<t> *tmp = this->HeadrefD, *slist = NULL;
+    NodeD<t> *fnwtail = NULL;
 
-    if (this->sz == 0)
-        return;
+    slist = mergesort(tmp);
+    fnwtail = slist;
 
-    tmp = this->HeadrefD;
-    tmp = mergesort(tmp);
-    this->HeadrefD = tmp;
+    while (fnwtail->next != NULL)
+    {
+        fnwtail = fnwtail->next;
+    }
+    this->TailrefD = fnwtail;
+    this->HeadrefD = slist;
 }
 //.............................................................................................
 template <class t>
@@ -1311,6 +1328,40 @@ linkedlistD<t> linkedlistD<t>::reverse()
         return listr;
     }
 }
+
+template <class t>
+void linkedlistD<t>::split(int part)
+{
+    NodeD<t> *tmp = NULL, *fnwtail = NULL;
+    std::pair<NodeD<t> *, NodeD<t> *> heads;
+    int k = 0;
+
+    if (this->emptys || this->sz == 1)
+        return;
+    else
+    {
+        tmp = this->HeadrefD;
+        heads = splitlist(tmp);
+    }
+    if (part == 1)
+    {
+        this->HeadrefD = heads.first;
+        fnwtail = heads.first;
+    }
+    else
+    {
+        this->HeadrefD = heads.second;
+        fnwtail = heads.second;
+    }
+
+    while (fnwtail != NULL)
+    {
+        fnwtail = fnwtail->next;
+        k++;
+    }
+    this->sz = k;
+    this->TailrefD = fnwtail;
+}
 //.............................................................................................
 //OPERADORES
 template <class t>
@@ -1418,8 +1469,7 @@ linkedlistD<t>::~linkedlistD()
 }
 //.............................................................................................
 template <class ti>
-//divide una lista a la mitad
-NodeD<ti> *split(NodeD<ti> *list);
+std::pair<NodeD<ti> *, NodeD<ti> *> splitlist(NodeD<ti> *head);
 
 template <class to>
 //funcion para hacer merge a dos listas
@@ -1445,111 +1495,53 @@ int main(int argc, char const *argv[])
     listadoble.push(16);
     listadoble.append(-1);
     listadoble.push(15);
-    listadoble.insert(2, 10000);
-    // listadoble.sort();
+    listadoble.push(45);
+    listadoble.push(7);
+    listadoble.push(5);
     listadoble.printlist();
-    l1 = listadoble;
-    l2 = listadoble + l1;
-    l1.printlist();
-    l2.printlist();
-    std::cout << l2[13] << "\n";
-
+    //listadoble.sort();
+    listadoble.split(1);
+    std::cout << listadoble.listsize() << "\n";
     listadoble.printlist();
     //listadoble.pop_front();
     //listadoble.pop_back();
 
-    /*std::cout << listadoble.search(16) << "\n";
-    listadoble.reverse();
-    listadoble.printlist();*/
-
-    /*L.push(15);
-    L.empty();
-    L.pop();
-    L.empty();
-
-    L.append(-1);
-    L.push(150);
-    L.push(100.56546);
-    L.push(500);
-    L.push(10000);
-    L.insert(1, -99);
-    L.insert_after(0, -100);
-    L.listsize();
-    Lcopy = L;
-    listf = L;
-    std::cout << ((Lcopy == listf) ? "si" : "no") << "\n";
-    L = listf + Lcopy;
-    std::cout << ((L == listf) ? "si" : "no") << "\n";
-    std::cout << L.listsize() << "\n";
-    L.printlist();
-    std::cout << L[4] << "pos 5 \n";
-    Lcopy.printlist();
-
-    L.clear();
-    L.empty();
-    L.push(1);
-    L.empty();
-    L.printlist();
-    //std::cout << L.search(500) << "\n";
-    //L.printlist();
-    //L.reverselist();
-    L.reverse();
-    L.printlist();
-    L.search_and_del(500);
-    L.printlist();
-    L.del(3);
-    L.printlist();
-    L.append(-5);
-    L.append(-2);
-    L.pop_front();
-    L.printlist();
-    L.tail();
-    L.at(L.listsize() - 1);
-    L.append(-1); //tail
-    L.printlist();
-    L.push(120);
-    L.push(888); //head
-    L.pop_back();
-    //Lcopy = L;
-    //Lcopy.printlist();
-    L.printlist();
-    L.head();
-    L.tail();
-    //L.~linkedlist();
-    L.printlist();
-    L.at(5);
-    List2.push(15);
-    List2.push(10);
-    List2.printlist();
-    list.empty();
-    listf.insert(0, 1);
-    listf.printlist();*/
     return 0;
 }
 
 template <class ti>
-//divide una lista a la mitad
-NodeD<ti> *split(NodeD<ti> *list)
+std::pair<NodeD<ti> *, NodeD<ti> *> splitlist(NodeD<ti> *head)
 {
-    NodeD<ti> *fast = list, *slow = list;
+    NodeD<ti> *fast = head->next, *slow = head;
     NodeD<ti> *tmp = NULL;
+    std::pair<NodeD<ti> *, NodeD<ti> *> heads;
 
-    while (fast->next != NULL && fast->next->next != NULL)
+    while (fast != NULL)
     {
-        fast = fast->next->next;
-        slow = fast->next;
+        fast = fast->next;
+        if (fast != NULL)
+        {
+            slow = slow->next;
+            fast = fast->next;
+        }
     }
 
     tmp = slow->next;
-    slow->prev = NULL;
-    return tmp;
+    tmp->prev = NULL;
+
+    slow->next = NULL;
+
+    heads.first = head;
+    heads.second = tmp;
+
+    return heads;
 }
 
 template <class to>
 //funcion para hacer merge a dos listas
 NodeD<to> *merge(NodeD<to> *list1, NodeD<to> *list2)
 {
-
+    NodeD<to> *tmp = NULL;
     if (list1 == NULL) //si la primer lista esta vacia
         return list2;
     if (list2 == NULL) //si la segunda esta vacia
@@ -1557,34 +1549,37 @@ NodeD<to> *merge(NodeD<to> *list1, NodeD<to> *list2)
 
     if (list1->getdata() < list2->getdata())
     { //tomamos los elementos mas pequeños de la lista
-        list1->next = merge<to>(list1->next, list2);
-        list1->next->prev = list1;
-        list1->prev = NULL;
-        return list1;
+        tmp = list1;
+        tmp->next = merge(list1->next, list2);
+        tmp->next->prev = tmp;
     }
     else
     {
-        list2->next = merge<to>(list1, list2->next);
-        list2->next->prev = list2;
-        list2->prev = NULL;
-        return list2;
+        tmp = list2;
+        tmp->next = merge(list1, list2->next);
+        tmp->next->prev = tmp;
     }
+
+    return tmp;
 }
 
 template <class tip>
 NodeD<tip> *mergesort(NodeD<tip> *list)
 {
-    NodeD<tip> *sec = NULL;
+    std::pair<NodeD<tip> *, NodeD<tip> *> lists;
+    NodeD<tip> *res = NULL;
 
     if (list == NULL || list->next == NULL)
         return list;
 
-    sec = split<tip>(list);
+    lists = splitlist(list);
 
-    list = mergesort<tip>(list);
-    sec = mergesort<tip>(sec);
+    lists.first = mergesort(lists.first);
+    lists.second = mergesort(lists.second);
 
-    return merge<tip>(list, sec);
+    res = merge(lists.first, lists.second);
+
+    return res;
 }
 
 /*nodos 
