@@ -138,6 +138,144 @@ tp NodeD<tp>::getdata()
 template <class tp>
 NodeD<tp>::~NodeD(){};
 
+//iteradores
+template <class tn>
+class iteratorS
+{
+private:
+    Node<tn> *node;
+
+public:
+    tn data;
+    iteratorS(Node<tn> *node);
+    iteratorS();
+
+    iteratorS<tn> &setnode(Node<tn> *nde);             //camia los datos del iterador
+    iteratorS<tn> &operator=(const iteratorS<tn> &it); //operador de asignacion
+    iteratorS<tn> &operator++();                       //operador para iterar de uno en uno (++iterador)
+    iteratorS<tn> &operator++(tn);                     //operador para iterar de uno en uno (iterador++)
+    iteratorS<tn> operator+(const int num);            //sumar pasos arbitrarios(it = it + 5)
+    bool operator==(const iteratorS<tn> &it) const;    //comparar iteradores
+    bool operator!=(const iteratorS<tn> &it) const;    //comparar iteradores
+
+    ~iteratorS();
+};
+
+template <class tn>
+iteratorS<tn>::iteratorS(Node<tn> *node)
+{
+    this->node = node;
+    this->data = node->getdata();
+}
+
+template <class tn>
+iteratorS<tn>::iteratorS()
+{
+    this->node = NULL;
+}
+
+template <class tn>
+iteratorS<tn> &iteratorS<tn>::setnode(Node<tn> *nde)
+{
+    node = nde;
+    data = nde->getdata();
+    return *this;
+}
+
+template <class tn>
+iteratorS<tn> &iteratorS<tn>::operator=(const iteratorS<tn> &it)
+{
+    this->node = it.node;
+    this->data = it.data;
+    return *this;
+}
+
+template <class tn>
+iteratorS<tn> &iteratorS<tn>::operator++()
+{
+    Node<tn> *tmp = NULL;
+
+    if (this->node == NULL)
+        throw std::invalid_argument("the list is empty");
+    else
+    {
+        tmp = this->node;
+        tmp = tmp->next;
+        if (tmp != NULL)
+            this->data = tmp->getdata();
+        this->node = tmp;
+    }
+
+    return *this;
+}
+
+template <class tn>
+iteratorS<tn> &iteratorS<tn>::operator++(tn)
+{
+    Node<tn> *tmp = NULL;
+
+    if (this->node == NULL)
+        throw std::invalid_argument("the list is empty");
+    else
+    {
+        tmp = this->node;
+        tmp = tmp->next;
+        if (tmp != NULL)
+            this->data = tmp->getdata();
+        this->node = tmp;
+    }
+
+    return *this;
+}
+
+template <class tn>
+iteratorS<tn> iteratorS<tn>::operator+(const int num)
+{
+    Node<tn> *tmp = NULL;
+    iteratorS<tn> it;
+    int k = 0;
+
+    if (this->node == NULL)
+        throw std::invalid_argument("the list is empty");
+    else
+    {
+        tmp = this->node;
+        while (tmp != NULL)
+        {
+            if (k == num)
+                break;
+            tmp = tmp->next;
+            k++;
+        }
+    }
+
+    if (k != num)
+        throw std::out_of_range("out of range");
+    else
+    {
+        it.setnode(tmp);
+    }
+
+    return it;
+}
+
+template <class tn>
+bool iteratorS<tn>::operator==(const iteratorS<tn> &it) const
+{
+    return (this->node == it.node) ? true : false;
+}
+
+template <class tn>
+bool iteratorS<tn>::operator!=(const iteratorS<tn> &it) const
+{
+    return (this->node == it.node) ? false : true;
+}
+
+template <class tn>
+iteratorS<tn>::~iteratorS()
+{
+}
+
 //#############################################################################################
 //LISTA SIMPLEMENTE LIGADA
 template <class ty>
@@ -205,6 +343,11 @@ public:
     bool operator==(const linkedlist<ty> &list) const; //compara si dos listas son iguales
 
     ty operator[](const int &index); //operador de acceso con corchetes
+
+    //ITERADORES
+    iteratorS<ty> begin();
+
+    iteratorS<ty> end();
 
     //DESTRUCTOR
 
@@ -840,6 +983,28 @@ ty linkedlist<ty>::operator[](const int &index)
 }
 
 //.............................................................................................
+
+template <class ty>
+iteratorS<ty> linkedlist<ty>::begin()
+{
+    Node<ty> *tmp;
+    iteratorS<ty> it;
+    tmp = this->HeadrefS;
+    it.setnode(tmp);
+
+    return it;
+}
+
+template <class ty>
+iteratorS<ty> linkedlist<ty>::end()
+{
+    Node<ty> *tmp;
+    iteratorS<ty> it;
+
+    it = this->begin() + (this->size);
+    return it;
+}
+
 template <class ty>
 linkedlist<ty>::~linkedlist()
 {
@@ -1294,12 +1459,10 @@ void linkedlistD<t>::reverselist()
     while (tmp->prev != NULL)
     {
         aux = tmp;
-
-        it->next = tmp;
-        prev = tmp->prev;
-        tmp->next = NULL;
-
-        tmp = it->prev;
+        tmp = tmp->prev;
+        it->next = aux;
+        aux->prev = it;
+        aux->next = NULL;
     }
 
     //this->HeadrefD = nwhead;
@@ -1485,11 +1648,19 @@ int main(int argc, char const *argv[])
     linkedlist<float> listf, L, Lcopy;
     linkedlistD<int> listadoble, l1, l2;
 
-    /*listadoble.append(1);
-    listadoble.pop_front();
-    std::cout << ((listadoble.empty()) ? "true" : "false") << "\n";*/
+    list.push(2);
+    list.push(3);
+    list.push(4);
+    list.push(5);
+    list.push(6);
+    list.push(7);
+    list.printlist();
+    for (iteratorS<int> it = list.begin(); it != list.end() + 1; it++)
+    {
+        std::cout << it.data << std::endl;
+    }
 
-    listadoble.push(10);
+    /*listadoble.push(10);
     listadoble.push(18);
     listadoble.push(17);
     listadoble.push(16);
@@ -1502,9 +1673,10 @@ int main(int argc, char const *argv[])
     //listadoble.sort();
     listadoble.split(1);
     std::cout << listadoble.listsize() << "\n";
+    listadoble.sort();
     listadoble.printlist();
     //listadoble.pop_front();
-    //listadoble.pop_back();
+    //listadoble.pop_back();*/
 
     return 0;
 }
