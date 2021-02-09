@@ -114,9 +114,10 @@ public:
         en una lista simple es necesario recorrer la lista para encontrar el nodo previo al 
         ultimo de la lista.
     */
-    void clear();    //elimina todos los elementos de la lista
-    void pop();      //Elimina el elemento al principio de la lista
-    void pop_back(); //elimina el elemento al final de la lista
+    void clear();           //Elimina todos los elementos de la lista
+    void pop();             //Elimina el elemento al principio de la lista
+    void pop_back();        //Elimina el elemento al final de la lista
+    void del(size_t index); //Elimina el elemento en el indice señalado
 
     friend std::ostream &operator<<(std::ostream &o, linkedlist<type> &list)
     {
@@ -142,6 +143,13 @@ public:
     }
 
     size_t size_list() const { return this->size; } //Retorna el tamaño de la lista
+
+    linkedlist<type> &operator=(const linkedlist<type> &list2);  //Operador de asignacion
+    linkedlist<type> operator+(const linkedlist<type> &list2);   //Operador de union retorna la lista unida apartir de dos listas sin modificarlas
+    linkedlist<type> &operator*=(const linkedlist<type> &list2); //Operador de union une una lista a la lista actual
+
+    type operator[](const size_t index);                  //Operador de acceso con corchetes
+    type operator()(const size_t star, const size_t end); //Operador rebanada reatorna un sublista en el rago del los indices señalados(inclusivo)
 
     ~linkedlist();
 };
@@ -417,6 +425,47 @@ void linkedlist<type>::pop_back()
 }
 
 template <typename type>
+void linkedlist<type>::del(size_t index)
+{
+    if (this->Head == NULL)
+        throw std::invalid_argument("List is empty!");
+
+    if (index >= this->size)
+        throw std::out_of_range("invalid index!");
+
+    if (index == 0)
+    {
+        this->pop();
+        return;
+    }
+    if (index == this->size - 1)
+    {
+        this->pop_back();
+        return;
+    }
+
+    Node<type> *nodeD = NULL, *prev = NULL, *it = this->Head;
+    size_t k = 0;
+
+    while (it != NULL)
+    {
+        if (k == index - 1)
+            prev = it;
+        if (k == index)
+            break;
+        it = it->next;
+        k++;
+    }
+    nodeD = it;
+
+    prev->next = it->next;
+
+    delete nodeD;
+
+    this->size -= 1;
+}
+
+template <typename type>
 linkedlist<type>::~linkedlist()
 {
     if (this->Head != NULL)
@@ -425,7 +474,7 @@ linkedlist<type>::~linkedlist()
 
 int main(int argc, char const *argv[])
 {
-    linkedlist<int> A, B;
+    linkedlist<int> A, B, C;
 
     A.push(1);
     A.push(2);
@@ -446,6 +495,17 @@ int main(int argc, char const *argv[])
     std::cout << A << std::endl;
 
     A.at(3);
+
+    A.del(1);
+    std::cout << A << std::endl;
+
+    C.push(1);
+
+    std::cout << C << std::endl;
+
+    C.del(0);
+
+    std::cout << C << std::endl;
 
     std::cout << B << std::endl;
 
