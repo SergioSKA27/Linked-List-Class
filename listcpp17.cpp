@@ -40,6 +40,7 @@
 
 
     Usa el estandar de C++17 al compilarlo :).
+    Ademas debes hacer uso la bandera -fconcepts-ts al compilar.
 */
 template <typename t>
 class Node
@@ -116,11 +117,12 @@ public:
             nuevo dato.
 
     */
+    void push(auto Data); //Inserta un elemento al principio de la lista
     void push(type Data); //Inserta un elemento al principio de la lista
     template <typename... args>
     void push(args &&... elements); //hacer push a multiples elementos
 
-    void push_back(type Data); //inserta elementos al principio de la lista
+    void push_back(auto Data); //inserta elementos al principio de la lista
     template <typename... args>
     void push_back(args &&... elements); //hacer push a multiples elementos
 
@@ -220,6 +222,24 @@ linkedlist<type>::linkedlist(args &&... params)
 }
 
 template <typename type>
+void linkedlist<type>::push(auto Data)
+{
+    type data = Data;
+    auto h = this->Head; //Guardamos una ref. al head previo
+
+    this->Nodes = new Node<type>(data); //Creamos el nuevo nodo con los datos
+
+    this->Head = this->Nodes; //El nodo insertado es el nuevo head
+    this->Nodes->next = h;    //El sig. del elemento insertado es headn previo
+    this->size += 1;          //Aumentamos el tamaño de la lista
+
+    if (this->size == 1)
+    { //Si el tamaño es uno el elemento en la lista tambie es el tail+
+        this->Tail = this->Head;
+    }
+}
+
+template <typename type>
 void linkedlist<type>::push(type Data)
 {
     auto h = this->Head; //Guardamos una ref. al head previo
@@ -237,8 +257,9 @@ void linkedlist<type>::push(type Data)
 }
 
 template <typename type>
-void linkedlist<type>::push_back(type Data)
+void linkedlist<type>::push_back(auto Data)
 {
+    type data = Data;
     auto t = this->tail();
 
     if (this->Head == NULL) //Si la lista esta vacia hacemos push
@@ -757,6 +778,9 @@ int main(int argc, char const *argv[])
     slist.push(s[4]);
     slist.push(s[5]);
     slist.push(s[6]);
+    slist.push("a");
+    slist.push("Hola mundo");
+    slist.push("12");
 
     std::cout << slist << std::endl;
 
