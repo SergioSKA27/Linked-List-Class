@@ -5,6 +5,34 @@
 #include <vector>
 #include <exception>
 
+/*
+    @autor: Sergio Lopez Martinez
+
+    ---Implementación de Listas ligadas  Simples , Dobles y Circulares---
+    
+    Todos los metodos respetan los tiempos de ejecución definidos para listas:
+
+        -Inserción  de datos en tiempo constante O(1), unicamente para  las funciónes
+        push y push_back.
+            ·para los metodos de inserción de datos como insert tenemos  que 
+            este se ejecuta en un tiempo del orden  O(k), donde k representa
+            la posicion donde queremos insertar el dato.
+        
+        -Los metodos de acceso como at o el operador corchete se ejcutan en un tiempo
+        del orden O(k), siendo k la posición a la que queremos acceder.
+            .En caso de que las posiciones a las queramos acceder sean la primera
+            la  ultima  el acceso a  estas es del oreden O(1), dado  que en  todo 
+            momento sabemos quien es el primero y el ultimo de la lista. 
+
+        -Los metodos para invertir una lista son del orden de O(n).
+        -El metodo clear de igual forma es del orden O(n).
+            .El metodo 'del' es  del orden O(k) donde 
+            k  representa  la posicion  que  queremos
+            eliminar. 
+
+
+    Usa el estandar de C++17 al compilarlo :).
+*/
 template <typename t>
 class Node
 {
@@ -55,7 +83,7 @@ private:
 
     size_t size; //Tamaño de la lista
 
-    Node<type> *_reverse(Node<type> *Head);
+    Node<type> *_reverse(Node<type> *Head); //Funcion para invertir una lista de forma recursiva
 
 public:
     linkedlist();                              //Constructor default
@@ -100,7 +128,8 @@ public:
         -La funcion para invertir una lista se ejecuta en tiempo lineal O(n) es decir  la 
         funcion recursiva genera tantas instancias como nodos tenga la lista.
     */
-    void reverse(); //Invierte la lista actual(modifica el objeto)
+    void reverse();                                        //Invierte la lista actual(modifica el objeto)
+    std::pair<linkedlist<type>, linkedlist<type>> split(); //Divide una lista en dos y retorna un pair con ambas partes
 
     /*
         -La funcion clear es del orden O(n) dado el ciclo para borrar los nodos se ejecuta 
@@ -144,12 +173,15 @@ public:
 
     size_t size_list() const { return this->size; } //Retorna el tamaño de la lista
 
+    /*OPERADORES*/
+
     linkedlist<type> &operator=(const linkedlist<type> &list2);  //Operador de asignacion
     linkedlist<type> operator+(const linkedlist<type> &list2);   //Operador de union retorna la lista unida apartir de dos listas sin modificarlas
-    linkedlist<type> &operator*=(const linkedlist<type> &list2); //Operador de union une una lista a la lista actual
+    linkedlist<type> &operator+=(const linkedlist<type> &list2); //Operador de union une una lista a la lista actual
+    linkedlist<type> operator!();                                //Operador inversion retorna la lista invertida(no modifica el objeto )
 
-    type operator[](const size_t index);                  //Operador de acceso con corchetes
-    type operator()(const size_t star, const size_t end); //Operador rebanada reatorna un sublista en el rago del los indices señalados(inclusivo)
+    type operator[](const size_t index);                     //Operador de acceso con corchetes
+    linkedlist<type> operator()(const size_t star, int end); //Operador rebanada XD reatorna un sublista en el rago del los indices señalados(inclusivo)
 
     ~linkedlist();
 };
@@ -355,6 +387,42 @@ void linkedlist<type>::reverse()
 }
 
 template <typename type>
+std::pair<linkedlist<type>, linkedlist<type>> linkedlist<type>::split()
+{
+    auto it = this->Head;
+    linkedlist<type> A, B;
+    std::pair<linkedlist<type>, linkedlist<type>> P;
+    size_t k = 0, m = this->size / 2;
+
+    if (this->Head == NULL || this->Head->next == NULL)
+    {
+        A = (*this);
+        P.first = A;
+        P.second = B;
+        return P;
+    }
+
+    while (k < m)
+    {
+        A.push_back(it->getdata());
+        it = it->next;
+        k++;
+    }
+
+    while (it != NULL)
+    {
+        B.push_back(it->getdata());
+        it = it->next;
+        k++;
+    }
+
+    P.first = A;
+    P.second = B;
+
+    return P;
+}
+
+template <typename type>
 void linkedlist<type>::clear()
 {
     if (this->Head == NULL)
@@ -466,9 +534,97 @@ void linkedlist<type>::del(size_t index)
 }
 
 template <typename type>
+linkedlist<type> &linkedlist<type>::operator=(const linkedlist<type> &list2)
+{
+    Node<type> *it = list2.head();
+
+    while (it != NULL)
+    {
+        this->push_back(it->getdata());
+        it = it->next;
+    }
+
+    return (*this);
+}
+
+template <typename type>
+linkedlist<type> &linkedlist<type>::operator+=(const linkedlist<type> &list2)
+{
+    auto it = list2.Head;
+
+    while (it != NULL)
+    {
+        this->push_back(it->getdata());
+        it = it->next;
+    }
+
+    return (*this);
+}
+
+template <typename type>
+linkedlist<type> linkedlist<type>::operator+(const linkedlist<type> &list2)
+{
+    Node<type> *s = list2.head();
+    linkedlist<type> result;
+
+    result = (*this);
+
+    while (s != NULL)
+    {
+        result.push_back(s->getdata());
+        s = s->next;
+    }
+
+    return result;
+}
+
+template <typename type>
+linkedlist<type> linkedlist<type>::operator!()
+{
+    linkedlist<type> revers;
+    Node<type> *it = this->Head;
+
+    while (it != NULL)
+    {
+        revers.push(it->getdata());
+        it = it->next;
+    }
+
+    return revers;
+}
+
+template <typename type>
+linkedlist<type> linkedlist<type>::operator()(size_t start, int end)
+{
+    size_t k = 0;
+
+    Node<type> *it = this->Head;
+
+    linkedlist<type> sublist;
+
+    if ((start >= this->size || end >= this->size))
+        throw std::out_of_range("Invalid index!");
+
+    if (end == -1)
+        end = this->size;
+
+    while (it != NULL)
+    {
+        if (k > end)
+            break;
+        if (k >= start)
+            sublist.push_back(it->getdata());
+
+        it = it->next;
+    }
+
+    return sublist;
+}
+
+template <typename type>
 linkedlist<type>::~linkedlist()
 {
-    if (this->Head != NULL)
+    if (this->Head != NULL) //Si la lista no esta vacia borramos su contenido
         this->clear();
 }
 
@@ -492,21 +648,25 @@ int main(int argc, char const *argv[])
     std::cout << A << std::endl;
 
     A.push_back(100000);
+    A.push(12);
     std::cout << A << std::endl;
 
     A.at(3);
+
+    A.split();
 
     A.del(1);
     std::cout << A << std::endl;
 
     C.push(1);
-
+    C.push(13);
+    C.push(15);
+    C.push(16);
+    C.push(189);
     std::cout << C << std::endl;
+    std::cout << B << std::endl;
 
-    C.del(0);
-
-    std::cout << C << std::endl;
-
+    B = !A;
     std::cout << B << std::endl;
 
     return 0;
