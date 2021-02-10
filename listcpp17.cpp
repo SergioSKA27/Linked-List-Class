@@ -13,7 +13,7 @@
     Todos los metodos respetan los tiempos de ejecución definidos para listas:
 
         -Inserción  de datos en tiempo constante O(1), unicamente para  las funciónes
-        push y push_back.
+        push y append.
 
             ·para los metodos de inserción de datos como insert tenemos  que 
             este se ejecuta en un tiempo del orden  O(k), donde k representa
@@ -103,7 +103,7 @@ public:
 
     /*
         Metodos para insertar datos:
-            - los metodos push y push_back se ejecutan ambos en tiempo constante 
+            - los metodos push y append se ejecutan ambos en tiempo constante 
             puesto que siempre se sabe cual es el primer y el ultimo elemento de 
             la lista.
             
@@ -118,13 +118,12 @@ public:
 
     */
     void push(auto Data); //Inserta un elemento al principio de la lista
-    void push(type Data); //Inserta un elemento al principio de la lista
     template <typename... args>
     void push(args &&... elements); //hacer push a multiples elementos
 
-    void push_back(auto Data); //inserta elementos al principio de la lista
+    void append(auto Data); //inserta elementos al principio de la lista
     template <typename... args>
-    void push_back(args &&... elements); //hacer push a multiples elementos
+    void append(args &&... elements); //hacer push a multiples elementos
 
     void insert(size_t index, type Data);   //Insertamos un nuevo dato en el indice señalado
     void insertAF(size_t index, type Data); //Insertamos un dato despues del indice señalado
@@ -240,24 +239,7 @@ void linkedlist<type>::push(auto Data)
 }
 
 template <typename type>
-void linkedlist<type>::push(type Data)
-{
-    auto h = this->Head; //Guardamos una ref. al head previo
-
-    this->Nodes = new Node<type>(Data); //Creamos el nuevo nodo con los datos
-
-    this->Head = this->Nodes; //El nodo insertado es el nuevo head
-    this->Nodes->next = h;    //El sig. del elemento insertado es headn previo
-    this->size += 1;          //Aumentamos el tamaño de la lista
-
-    if (this->size == 1)
-    { //Si el tamaño es uno el elemento en la lista tambie es el tail+
-        this->Tail = this->Head;
-    }
-}
-
-template <typename type>
-void linkedlist<type>::push_back(auto Data)
+void linkedlist<type>::append(auto Data)
 {
     type data = Data;
     auto t = this->tail();
@@ -283,7 +265,7 @@ void linkedlist<type>::insert(size_t index, type Data)
         this->push(Data);
     else if (index == this->size - 1)
     { //Para insertar elemetos al final usamos el tamaño de la lista-1
-        this->push_back(Data);
+        this->append(Data);
     }
     else
     {
@@ -338,7 +320,7 @@ void linkedlist<type>::insertAF(size_t index, type Data)
     Node<type> *tmp = this->Head, *aux = NULL;
 
     if (index == this->size - 1) //Insertar elementos al final de la lista
-        this->push_back(Data);
+        this->append(Data);
     else
     {
         while (k < this->size && tmp != NULL)
@@ -437,14 +419,14 @@ std::pair<linkedlist<type>, linkedlist<type>> linkedlist<type>::split()
 
     while (k < m)
     {
-        A.push_back(it->getdata());
+        A.append(it->getdata());
         it = it->next;
         k++;
     }
 
     while (it != NULL)
     {
-        B.push_back(it->getdata());
+        B.append(it->getdata());
         it = it->next;
         k++;
     }
@@ -573,7 +555,7 @@ linkedlist<type> &linkedlist<type>::operator=(const linkedlist<type> &list2)
 
     while (it != NULL)
     {
-        this->push_back(it->getdata());
+        this->append(it->getdata());
         it = it->next;
     }
 
@@ -587,7 +569,7 @@ linkedlist<type> &linkedlist<type>::operator+=(const linkedlist<type> &list2)
 
     while (it != NULL)
     {
-        this->push_back(it->getdata());
+        this->append(it->getdata());
         it = it->next;
     }
 
@@ -604,7 +586,7 @@ linkedlist<type> linkedlist<type>::operator+(const linkedlist<type> &list2)
 
     while (s != NULL)
     {
-        result.push_back(s->getdata());
+        result.append(s->getdata());
         s = s->next;
     }
 
@@ -646,7 +628,7 @@ linkedlist<type> linkedlist<type>::operator()(size_t start, int end)
         if (k > end)
             break;
         if (k >= start)
-            sublist.push_back(it->getdata());
+            sublist.append(it->getdata());
 
         it = it->next;
         k++;
@@ -786,9 +768,9 @@ int main(int argc, char const *argv[])
 
     A.push(1);
     A.push(2);
-    A.push_back(15);
+    A.append(15);
     A.push(20);
-    A.push_back(-1);
+    A.append(-1);
     std::cout << A << std::endl;
 
     A.insertAF(0, -100);
@@ -799,7 +781,7 @@ int main(int argc, char const *argv[])
     A.pop_back();
     std::cout << A << std::endl;
 
-    A.push_back(100000);
+    A.append(100000);
     A.push(12);
     std::cout << A << std::endl;
 
