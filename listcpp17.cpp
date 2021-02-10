@@ -82,6 +82,96 @@ Node<t>::~Node()
 {
 }
 
+/*
+    ---ITERADORES PARA LISTAS SIMPLEMENTE LIGADAS---
+
+    Con el uso  de dichos  iteradores es  posible recorrer  una lista 
+    simple sin necesidad  de  hacer uso de  los  operadores de acceso
+    de la clase dado  que  estos  al tener que recorrer la lista para
+    acceder a la posicion  hacen  ineficiente el hecho de recorrer la 
+    estructura haciendo uso de de este metodo.
+
+    Ademas de  ello esta  implementacion permite el uso de ciclos for 
+    y while para recorrer la lista.
+
+    EJEMPLO:
+
+    for(IteratorS iter = list.begin(); iter != list.end(); iter++)
+    {
+        cout << iter()<< endl;
+    }
+
+    en el ejemplo recorremos una lista haciendo uso de los iteradores
+    begin y end, que señalan respectivamente el principio y el  final 
+    de la lista.
+
+    Ademas  de  esto es  posible  comenzar el ciclo (o terminarlo) en 
+    cualquier posicion, haciendo uso del iterador begin y el operador
+    '+' sumando el numero de posiciones que nos queremos  mover desde
+    el principio de la lista.
+
+*/
+template <typename istype>
+class IteratorS
+{
+private:
+    Node<istype> *iterator;
+
+public:
+    IteratorS(Node<istype> *it);
+    IteratorS();
+
+    istype operator()() const { return this->iterator->getdata(); } //retorna el valor del iterador
+
+    IteratorS<istype> &operator=(const IteratorS<istype> &iter2); //Operador de asignación
+    IteratorS<istype> &operator++();                              //iterar de uno en uno (++iterator)
+    IteratorS<istype> &operator++(istype);                        //iterar de uno en uno (iterator++)
+    IteratorS<istype> &operator+(const size_t value);             //aumentar el valor de la iteración en mas de uno
+
+    bool operator==(const IteratorS<istype> &iter2) const;
+    bool operator!=(const IteratorS<istype> &iter2) const;
+
+    ~IteratorS();
+};
+
+template <typename istype>
+IteratorS<istype>::IteratorS(Node<istype> *iter)
+{
+    this->iterator = iter;
+}
+
+template <typename istype>
+IteratorS<istype>::IteratorS()
+{
+    this->iterator = NULL;
+}
+
+template <typename istype>
+IteratorS<istype> &IteratorS<istype>::operator=(const IteratorS<istype> &iter2)
+{
+    this->iterator = iter2.iterator;
+    return *this;
+}
+
+template <typename istype>
+IteratorS<istype> &IteratorS<istype>::operator++()
+{
+    this->iterator = this->iterator->next;
+    return *this;
+}
+
+template <typename istype>
+IteratorS<istype> &IteratorS<istype>::operator++(istype)
+{
+    this->iterator = this->iterator->next;
+    return *this;
+}
+
+template <typename istype>
+IteratorS<istype>::~IteratorS()
+{
+}
+
 template <typename type>
 class linkedlist
 {
@@ -195,6 +285,9 @@ public:
 
     //IteratorS<type> begin(); //Retorna un iterador al princio de la lista
     //IteratorS<type> end();   //Retorna un iterador al final de la lista
+
+    IteratorS<type> begin();
+    IteratorS<type> end();
 
     ~linkedlist();
 };
@@ -650,100 +743,26 @@ type linkedlist<type>::operator[](const int index)
 }
 
 template <typename type>
+IteratorS<type> linkedlist<type>::begin()
+{
+    IteratorS beg(this->Head);
+
+    return beg;
+}
+
+template <typename type>
+IteratorS<type> linkedlist<type>::end()
+{
+    IteratorS<type> beg;
+
+    return beg;
+}
+
+template <typename type>
 linkedlist<type>::~linkedlist()
 {
     if (this->Head != NULL) //Si la lista no esta vacia borramos su contenido
         this->clear();
-}
-
-/*
-    ---ITERADORES PARA LISTAS SIMPLEMENTE LIGADAS---
-
-    Con el uso  de dichos  iteradores es  posible recorrer  una lista 
-    simple sin necesidad  de  hacer uso de  los  operadores de acceso
-    de la clase dado  que  estos  al tener que recorrer la lista para
-    acceder a la posicion  hacen  ineficiente el hecho de recorrer la 
-    estructura haciendo uso de de este metodo.
-
-    Ademas de  ello esta  implementacion permite el uso de ciclos for 
-    y while para recorrer la lista.
-
-    EJEMPLO:
-
-    for(IteratorS iter = list.begin(); iter != list.end(); iter++)
-    {
-        cout << iter()<< endl;
-    }
-
-    en el ejemplo recorremos una lista haciendo uso de los iteradores
-    begin y end, que señalan respectivamente el principio y el  final 
-    de la lista.
-
-    Ademas  de  esto es  posible  comenzar el ciclo (o terminarlo) en 
-    cualquier posicion, haciendo uso del iterador begin y el operador
-    '+' sumando el numero de posiciones que nos queremos  mover desde
-    el principio de la lista.
-
-*/
-template <typename istype>
-class IteratorS
-{
-private:
-    Node<istype> *iterator;
-
-public:
-    IteratorS(Node<istype> *it);
-    IteratorS();
-
-    istype operator()() const { return this->iterator->getdata(); } //retorna el valor del iterador
-
-    IteratorS<istype> &operator=(const IteratorS<istype> &iter2); //Operador de asignación
-    IteratorS<istype> &operator++();                              //iterar de uno en uno (++iterator)
-    IteratorS<istype> &operator++(istype);                        //iterar de uno en uno (iterator++)
-    IteratorS<istype> &operator+(const size_t value);             //aumentar el valor de la iteración en mas de uno
-
-    bool operator==(const IteratorS<istype> &iter2) const;
-    bool operator!=(const IteratorS<istype> &iter2) const;
-
-    ~IteratorS();
-};
-
-template <typename istype>
-IteratorS<istype>::IteratorS(Node<istype> *iter)
-{
-    this->iterator = iter;
-}
-
-template <typename istype>
-IteratorS<istype>::IteratorS()
-{
-    this->iterator = NULL;
-}
-
-template <typename istype>
-IteratorS<istype> &IteratorS<istype>::operator=(const IteratorS<istype> &iter2)
-{
-    this->iterator = iter2.iterator;
-    return *this;
-}
-
-template <typename istype>
-IteratorS<istype> &IteratorS<istype>::operator++()
-{
-    this->iterator = this->iterator->next;
-    return *this;
-}
-
-template <typename istype>
-IteratorS<istype> &IteratorS<istype>::operator++(istype)
-{
-    this->iterator = this->iterator->next;
-    return *this;
-}
-
-template <typename istype>
-IteratorS<istype>::~IteratorS()
-{
 }
 
 int main(int argc, char const *argv[])
