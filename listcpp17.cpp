@@ -14,21 +14,29 @@
 
         -Inserción  de datos en tiempo constante O(1), unicamente para  las funciónes
         push y push_back.
+
             ·para los metodos de inserción de datos como insert tenemos  que 
             este se ejecuta en un tiempo del orden  O(k), donde k representa
             la posicion donde queremos insertar el dato.
         
         -Los metodos de acceso como at o el operador corchete se ejcutan en un tiempo
         del orden O(k), siendo k la posición a la que queremos acceder.
+
             .En caso de que las posiciones a las queramos acceder sean la primera
             la  ultima  el acceso a  estas es del oreden O(1), dado  que en  todo 
             momento sabemos quien es el primero y el ultimo de la lista. 
 
         -Los metodos para invertir una lista son del orden de O(n).
+
         -El metodo clear de igual forma es del orden O(n).
+
             .El metodo 'del' es  del orden O(k) donde 
             k  representa  la posicion  que  queremos
             eliminar. 
+
+        -Los metodos pop y pop back se ejecuntan en timepo constante O(1), a excepcion 
+        de las listas simples en donde el metodo pop_back es del orden (n) dado que es 
+        necesario localizar el penultimo elemento.
 
 
     Usa el estandar de C++17 al compilarlo :).
@@ -172,6 +180,7 @@ public:
     }
 
     size_t size_list() const { return this->size; } //Retorna el tamaño de la lista
+    bool empty() const { return (this->Head == NULL) ? true : false; }
 
     /*OPERADORES*/
 
@@ -180,8 +189,11 @@ public:
     linkedlist<type> &operator+=(const linkedlist<type> &list2); //Operador de union une una lista a la lista actual
     linkedlist<type> operator!();                                //Operador inversion retorna la lista invertida(no modifica el objeto )
 
-    type operator[](const size_t index);                     //Operador de acceso con corchetes
+    type operator[](const int index);                        //Operador de acceso con corchetes
     linkedlist<type> operator()(const size_t star, int end); //Operador rebanada XD reatorna un sublista en el rago del los indices señalados(inclusivo)
+
+    //IteratorS<type> begin(); //Retorna un iterador al princio de la lista
+    //IteratorS<type> end();   //Retorna un iterador al final de la lista
 
     ~linkedlist();
 };
@@ -602,10 +614,10 @@ linkedlist<type> linkedlist<type>::operator()(size_t start, int end)
 
     linkedlist<type> sublist;
 
-    if ((start >= this->size || end >= this->size))
+    if (((start >= this->size || end >= this->size) || (start < 0 || end < 0)) && end != -1)
         throw std::out_of_range("Invalid index!");
 
-    if (end == -1)
+    if (end == -1) //al usar menos uno nos referimos al final de la lista
         end = this->size;
 
     while (it != NULL)
@@ -616,9 +628,22 @@ linkedlist<type> linkedlist<type>::operator()(size_t start, int end)
             sublist.push_back(it->getdata());
 
         it = it->next;
+        k++;
     }
 
     return sublist;
+}
+
+template <typename type>
+type linkedlist<type>::operator[](const int index)
+{
+    if ((index >= this->size || index < 0) && index != -1)
+        throw std::out_of_range("Invalid index!");
+
+    if (index == -1)
+        index = this->size - 1;
+
+    return (this->at(index)->getdata());
 }
 
 template <typename type>
@@ -628,9 +653,112 @@ linkedlist<type>::~linkedlist()
         this->clear();
 }
 
+/*
+    ---ITERADORES PARA LISTAS SIMPLEMENTE LIGADAS---
+
+    Con el uso  de dichos  iteradores es  posible recorrer  una lista 
+    simple sin necesidad  de  hacer uso de  los  operadores de acceso
+    de la clase dado  que  estos  al tener que recorrer la lista para
+    acceder a la posicion  hacen  ineficiente el hecho de recorrer la 
+    estructura haciendo uso de de este metodo.
+
+    Ademas de  ello esta  implementacion permite el uso de ciclos for 
+    y while para recorrer la lista.
+
+    EJEMPLO:
+
+    for(IteratorS iter = list.begin(); iter != list.end(); iter++)
+    {
+        cout << iter()<< endl;
+    }
+
+    en el ejemplo recorremos una lista haciendo uso de los iteradores
+    begin y end, que señalan respectivamente el principio y el  final 
+    de la lista.
+
+    Ademas  de  esto es  posible  comenzar el ciclo (o terminarlo) en 
+    cualquier posicion, haciendo uso del iterador begin y el operador
+    '+' sumando el numero de posiciones que nos queremos  mover desde
+    el principio de la lista.
+
+*/
+template <typename istype>
+class IteratorS
+{
+private:
+    Node<istype> *iterator;
+
+public:
+    IteratorS(Node<istype> *it);
+    IteratorS();
+
+    istype operator()() const { return this->iterator->getdata(); } //retorna el valor del iterador
+
+    IteratorS<istype> &operator=(const IteratorS<istype> &iter2); //Operador de asignación
+    IteratorS<istype> &operator++();                              //iterar de uno en uno (++iterator)
+    IteratorS<istype> &operator++(istype);                        //iterar de uno en uno (iterator++)
+    IteratorS<istype> &operator+(const size_t value);             //aumentar el valor de la iteración en mas de uno
+
+    bool operator==(const IteratorS<istype> &iter2) const;
+    bool operator!=(const IteratorS<istype> &iter2) const;
+
+    ~IteratorS();
+};
+
+template <typename istype>
+IteratorS<istype>::IteratorS(Node<istype> *iter)
+{
+    this->iterator = iter;
+}
+
+template <typename istype>
+IteratorS<istype>::IteratorS()
+{
+    this->iterator = NULL;
+}
+
+template <typename istype>
+IteratorS<istype> &IteratorS<istype>::operator=(const IteratorS<istype> &iter2)
+{
+    this->iterator = iter2.iterator;
+    return *this;
+}
+
+template <typename istype>
+IteratorS<istype> &IteratorS<istype>::operator++()
+{
+    this->iterator = this->iterator->next;
+    return *this;
+}
+
+template <typename istype>
+IteratorS<istype> &IteratorS<istype>::operator++(istype)
+{
+    this->iterator = this->iterator->next;
+    return *this;
+}
+
+template <typename istype>
+IteratorS<istype>::~IteratorS()
+{
+}
+
 int main(int argc, char const *argv[])
 {
     linkedlist<int> A, B, C;
+    linkedlist<std::string> slist;
+
+    std::string s[7] = {"hi", "world", "flower", "cluod", "sun", "moon", ":)"};
+
+    slist.push(s[0]);
+    slist.push(s[1]);
+    slist.push(s[2]);
+    slist.push(s[3]);
+    slist.push(s[4]);
+    slist.push(s[5]);
+    slist.push(s[6]);
+
+    std::cout << slist << std::endl;
 
     A.push(1);
     A.push(2);
@@ -664,9 +792,10 @@ int main(int argc, char const *argv[])
     C.push(16);
     C.push(189);
     std::cout << C << std::endl;
-    std::cout << B << std::endl;
+    std::cout << A << std::endl;
 
-    B = !A;
+    (B.empty()) ? std::cout << "v\n" : std::cout << "f\n";
+    B = A(3, -1);
     std::cout << B << std::endl;
 
     return 0;
