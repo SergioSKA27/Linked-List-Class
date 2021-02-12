@@ -170,6 +170,8 @@ template <typename istype>
 IteratorS<istype> &IteratorS<istype>::operator++()
 {
     this->iterator = this->iterator->next;
+    if (this->iterator == NULL)
+        throw std::out_of_range("Out of range!");
     return *this;
 }
 
@@ -177,6 +179,8 @@ template <typename istype>
 IteratorS<istype> &IteratorS<istype>::operator++(auto)
 {
     this->iterator = this->iterator->next;
+    if (this->iterator == NULL)
+        throw std::out_of_range("Out of range!");
     return *this;
 }
 
@@ -823,10 +827,389 @@ linkedlist<type>::~linkedlist()
         this->clear();
 }
 
+template <typename td>
+class NodeD
+{
+private:
+    td Data;
+
+public:
+    NodeD<td> *next; //Puntero al nodo siguiente.
+    NodeD<td> *prev; //Puntero  al  nodo  previo.
+    NodeD(td Data);
+    NodeD();
+
+    td getdata() const { return this->Data; }
+    td operator()() const { return this->Data; }
+
+    ~NodeD();
+};
+
+template <typename td>
+NodeD<td>::NodeD(td Data)
+{
+    this->next = NULL;
+    this->prev = NULL;
+    this->Data = Data;
+}
+
+template <typename td>
+NodeD<td>::NodeD()
+{
+    this->next = NULL;
+    this->prev = NULL;
+}
+
+template <typename td>
+NodeD<td>::~NodeD()
+{
+}
+
+template <typename typed>
+class linkedlistD
+{
+private:
+    NodeD<typed> *Head;
+    NodeD<typed> *Tail;
+    NodeD<typed> *Nodes;
+    size_t size;
+
+    NodeD<typed> *_reverse(NodeD<typed> *node);
+
+public:
+    linkedlistD();
+
+    void push(auto Data); //Inserta un elemento al principio de la lista
+    template <typename... args>
+    void push(args &&... elements); //hacer push a multiples elementos
+
+    void append(auto Data); //inserta elementos al principio de la lista
+    template <typename... args>
+    void append(args &&... elements); //hacer push a multiples elementos
+
+    void insert(size_t index, auto Data);   //Insertamos un nuevo dato en el indice señalado
+    void insertAF(size_t index, auto Data); //Insertamos un dato despues del indice señalado
+    void insertBF(size_t index, auto Data); //Insertamos un dato antes del indice señalado
+
+    NodeD<typed> *head() const;           //Retorna un puntero al principio de la lista
+    NodeD<typed> *tail() const;           //Retorna un puntero al final de la lista
+    NodeD<typed> *at(size_t index) const; //Retorna un puntero al elemento en el indice señalado
+
+    /*
+        -La funcion para invertir una lista se ejecuta en tiempo lineal O(n) es decir  la 
+        funcion recursiva genera tantas instancias como nodos tenga la lista.
+    */
+    void reverse();                                            //Invierte la lista actual(modifica el objeto)
+    std::pair<linkedlistD<typed>, linkedlistD<typed>> split(); //Divide una lista en dos y retorna un pair con ambas partes
+
+    /*
+        -La funcion clear es del orden O(n) dado el ciclo para borrar los nodos se ejecuta 
+        tantas veces como nodos tenga la lista.
+
+        -La funcion pop es del orden de O(1) dado que basta unicamente con eliminar el nodo 
+        al  principio de la lista( head) y moverlo la referencia del head  al sig. del nodo 
+        previamente eliminado.
+
+        -La funcion pop_back es del orden de O(n-1) puesto que para realizar esta operacion 
+        en una lista simple es necesario recorrer la lista para encontrar el nodo previo al 
+        ultimo de la lista.
+    */
+    void clear();           //Elimina todos los elementos de la lista
+    void pop();             //Elimina el elemento al principio de la lista
+    void pop_back();        //Elimina el elemento al final de la lista
+    void del(size_t index); //Elimina el elemento en el indice señalado
+
+    friend std::ostream &operator<<(std::ostream &o, linkedlistD<typed> &list)
+    {
+
+        if (list.head() == NULL)
+        {
+            o << "[]";
+            return o;
+        }
+
+        NodeD<typed> *i = list.head();
+
+        o << "[";
+        while (i != NULL)
+        {
+            if (i->next != NULL)
+                o << i->getdata() << ", ";
+            else
+                o << i->getdata();
+            i = i->next;
+        }
+        o << "]";
+        return o;
+    }
+
+    size_t size_list() const { return this->size; } //Retorna el tamaño de la lista
+    bool empty() const { return (this->Head == NULL) ? true : false; }
+
+    /*OPERADORES*/
+
+    linkedlistD<typed> &operator=(const linkedlistD<typed> &list2);  //Operador de asignacion
+    linkedlistD<typed> operator+(const linkedlistD<typed> &list2);   //Operador de union retorna la lista unida apartir de dos listas sin modificarlas
+    linkedlistD<typed> &operator+=(const linkedlistD<typed> &list2); //Operador de union une una lista a la lista actual
+    linkedlistD<typed> operator!();                                  //Operador inversion retorna la lista invertida(no modifica el objeto )
+
+    typed operator[](const int index);                         //Operador de acceso con corchetes
+    linkedlistD<typed> operator()(const size_t star, int end); //Operador rebanada XD reatorna un sublista en el rago del los indices señalados(inclusivo)
+
+    ~linkedlistD();
+};
+
+template <typename typed>
+linkedlistD<typed>::linkedlistD()
+{
+    this->Head = NULL;
+    this->Tail = NULL;
+    this->Nodes = NULL;
+    this->size = 0;
+}
+
+template <typename typed>
+void linkedlistD<typed>::push(auto Data)
+{
+    typed data = Data;
+
+    this->Nodes = new NodeD<typed>(data);
+
+    this->Nodes->next = this->Head;
+    this->Nodes->prev = NULL;
+    if (this->Head != NULL)
+        this->Head->prev = this->Nodes;
+    this->Head = this->Nodes;
+    this->size += 1;
+
+    if (this->size == 1)
+    {
+        this->Tail = this->Head;
+        this->size += 1;
+    }
+}
+
+template <typename typed>
+void linkedlistD<typed>::append(auto Data)
+{
+    typed dat = Data;
+    if (this->Head == NULL)
+        this->push(dat);
+    else
+    {
+        this->Nodes = new NodeD<typed>(dat);
+        this->Tail->next = this->Nodes;
+        this->Nodes->prev = this->Tail;
+        this->Tail = this->Nodes;
+        this->size += 1;
+    }
+}
+
+template <typename typed>
+void linkedlistD<typed>::insert(size_t index, auto Data)
+{
+    typed dat = Data;
+    size_t k = 0;
+    NodeD<typed> *it = this->Head;
+
+    if (index == 0)
+        this->push(dat);
+    else if (index == this->size - 1)
+        this->append(dat);
+    else
+    {
+        this->Nodes = new NodeD<typed>(dat);
+
+        while (it != NULL)
+        {
+            if (k == index)
+                break;
+            it = it->next;
+            k++;
+        }
+
+        it->prev->next = this->Nodes;
+        this->Nodes->prev = it->prev;
+        this->Nodes->next = it;
+        this->size += 1;
+    }
+}
+
+template <typename typed>
+void linkedlistD<typed>::insertBF(size_t index, auto Data)
+{
+    typed dat = Data;
+    size_t k = 0;
+    NodeD<typed> *it = this->Head;
+
+    if (index == 0)
+        this->push(dat);
+    else
+    {
+        this->Nodes = new NodeD<typed>(dat);
+
+        while (it != NULL)
+        {
+            if (k == index - 1)
+                break;
+            it = it->next;
+            k++;
+        }
+
+        it->prev->next = this->Nodes;
+        this->Nodes->prev = it->prev;
+        this->Nodes->next = it;
+        this->size += 1;
+    }
+}
+
+template <typename typed>
+void linkedlistD<typed>::insertAF(size_t index, auto Data)
+{
+    typed dat = Data;
+    size_t k = 0;
+    NodeD<typed> *it = this->Head;
+
+    if (index == this->size - 1)
+        this->append(dat);
+    else
+    {
+        this->Nodes = new NodeD<typed>(dat);
+
+        while (it != NULL)
+        {
+            if (k == index + 1)
+                break;
+            it = it->next;
+            k++;
+        }
+
+        it->prev->next = this->Nodes;
+        this->Nodes->prev = it->prev;
+        this->Nodes->next = it;
+        this->size += 1;
+    }
+}
+
+template <typename typed>
+NodeD<typed> *linkedlistD<typed>::head() const
+{
+    return this->Head;
+}
+
+template <typename typed>
+NodeD<typed> *linkedlistD<typed>::tail() const
+{
+    return this->Tail;
+}
+
+template <typename typed>
+NodeD<typed> *linkedlistD<typed>::_reverse(NodeD<typed> *node)
+{
+    if (node->next == NULL)
+    {
+        node->prev = NULL;
+        return node;
+    }
+    else
+    {
+        NodeD<typed> *nwhead = this->_reverse(node->next);
+        nwhead->next = node;
+        node->next = NULL;
+        node->prev = nwhead;
+        nwhead = nwhead->next;
+
+        return nwhead;
+    }
+}
+
+template <typename typed>
+void linkedlistD<typed>::reverse()
+{
+    if (this->Head == NULL)
+        throw std::invalid_argument("list is empty!");
+
+    NodeD<typed> *tmp = this->Head;
+    this->_reverse(tmp);
+
+    this->Head = this->Tail;
+    this->Tail = tmp;
+}
+
+template <typename typed>
+void linkedlistD<typed>::clear()
+{
+    NodeD<typed> *it = this->Head, *tmp = NULL;
+
+    while (it != NULL)
+    {
+        tmp = it;
+        it = it->next;
+        delete tmp;
+    }
+    this->size = 0;
+}
+
+template <typename typed>
+void linkedlistD<typed>::pop()
+{
+    if (this->Head == NULL)
+        throw std::invalid_argument("list is empty!");
+
+    NodeD<typed> *tmp = this->Head;
+
+    this->Head->next->prev = NULL;
+    this->Head = this->Head->next;
+    delete tmp;
+    this->size -= 1;
+}
+
+template <typename typed>
+void linkedlistD<typed>::pop_back()
+{
+    NodeD<typed> *tmp = this->Tail;
+
+    if (this->Tail->prev == NULL)
+    {
+        this->pop();
+    }
+
+    this->Tail->prev->next = NULL;
+    this->Tail = this->Tail->prev;
+    delete tmp;
+    this->size -= 1;
+}
+
+template <typename typed>
+NodeD<typed> *linkedlistD<typed>::at(size_t index) const
+{
+    size_t k = 0;
+    Node<typed> *it = this->Head;
+
+    while (it->next != NULL)
+    {
+        if (index == k)
+            break;
+        it = it->next;
+        k++;
+    }
+
+    return it;
+}
+
+template <typename typed>
+linkedlistD<typed>::~linkedlistD()
+{
+    if (this->Head != NULL)
+        this->clear();
+}
+
 int main(int argc, char const *argv[])
 {
     linkedlist<int> A, B, C;
     linkedlist<std::string> slist;
+
+    linkedlistD<int> DL;
 
     std::string s[7] = {"hi", "world", "flower", "cluod", "sun", "moon", ":)"};
 
@@ -843,10 +1226,32 @@ int main(int argc, char const *argv[])
 
     std::cout << slist << std::endl;
 
-    for (IteratorS<std::string> i = slist.begin() + 2; i != slist.at(7); i++)
+    for (IteratorS i = slist.begin() + 2; i != slist.at(7); i++)
     {
         std::cout << i() << std::endl;
     }
+
+    DL.push(12);
+    DL.push(23);
+    DL.push(4);
+    DL.push(3);
+    DL.push(56);
+    DL.push(-1);
+
+    DL.append(1050);
+    std::cout << DL.size_list() << std::endl;
+    DL.insert(DL.size_list() - 2, -100);
+    std::cout << DL << std::endl;
+    std::cout << DL.size_list() << std::endl;
+    DL.insertBF(DL.size_list() - 1, -555);
+
+    std::cout << DL << std::endl;
+
+    DL.insertAF(3, 666);
+    DL.pop_back();
+    std::cout << DL << std::endl;
+    DL.reverse();
+    std::cout << DL << std::endl;
 
     /*A.push(1);
     A.push(2);
