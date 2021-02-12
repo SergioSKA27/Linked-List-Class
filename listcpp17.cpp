@@ -108,8 +108,16 @@ Node<t>::~Node()
     Ademas  de  esto es  posible  comenzar el ciclo (o terminarlo) en 
     cualquier posicion, haciendo uso del iterador begin y el operador
     '+' sumando el numero de posiciones que nos queremos  mover desde
-    el principio de la lista.
+    el principio de la lista. O directamente colocando la posicion de 
+    la lista en la que queremos comenzar esto con el  metodo at de la
+    lista,con el cual podemos señalar la posicion en la cual queremos
+    iniciar o terminar el ciclo.
 
+    for(IteratorS iter = list.at(4); iter != list.at(10);iter++)
+    {
+        //el ciclo comienza en la posicion 4 de la lista y termina en 
+        //la posicion 9 
+    }
 */
 template <typename istype>
 class IteratorS
@@ -118,18 +126,21 @@ private:
     Node<istype> *iterator;
 
 public:
-    IteratorS(Node<istype> *it);
-    IteratorS();
+    IteratorS(Node<istype> *it = NULL);
 
     istype operator()() const { return this->iterator->getdata(); } //retorna el valor del iterador
 
     IteratorS<istype> &operator=(const IteratorS<istype> &iter2); //Operador de asignación
+    IteratorS<istype> &operator=(Node<istype> *NODE);             //Operador de asignación
     IteratorS<istype> &operator++();                              //iterar de uno en uno (++iterator)
-    IteratorS<istype> &operator++(istype);                        //iterar de uno en uno (iterator++)
-    IteratorS<istype> &operator+(const size_t value);             //aumentar el valor de la iteración en mas de uno
+    IteratorS<istype> &operator++(auto);                          //iterar de uno en uno (iterator++)
+    IteratorS<istype> operator+(const size_t value);              //aumentar el valor de la iteración en mas de uno
 
     bool operator==(const IteratorS<istype> &iter2) const;
     bool operator!=(const IteratorS<istype> &iter2) const;
+
+    bool operator==(const Node<istype> *NODE) const;
+    bool operator!=(const Node<istype> *NODE) const;
 
     ~IteratorS();
 };
@@ -141,15 +152,17 @@ IteratorS<istype>::IteratorS(Node<istype> *iter)
 }
 
 template <typename istype>
-IteratorS<istype>::IteratorS()
-{
-    this->iterator = NULL;
-}
-
-template <typename istype>
 IteratorS<istype> &IteratorS<istype>::operator=(const IteratorS<istype> &iter2)
 {
     this->iterator = iter2.iterator;
+    return *this;
+}
+
+template <typename istype>
+IteratorS<istype> &IteratorS<istype>::operator=(Node<istype> *NODE)
+{
+
+    this->iterator = NODE;
     return *this;
 }
 
@@ -161,10 +174,58 @@ IteratorS<istype> &IteratorS<istype>::operator++()
 }
 
 template <typename istype>
-IteratorS<istype> &IteratorS<istype>::operator++(istype)
+IteratorS<istype> &IteratorS<istype>::operator++(auto)
 {
     this->iterator = this->iterator->next;
     return *this;
+}
+
+template <typename istype>
+IteratorS<istype> IteratorS<istype>::operator+(const size_t value)
+{
+    size_t k = 0;
+    Node<istype> *tmp = this->iterator;
+    IteratorS<istype> it;
+
+    while (tmp != NULL)
+    {
+        if (k == value)
+            break;
+
+        tmp = tmp->next;
+        k++;
+    }
+
+    if (k != value) //si el valor de k no es value, se esta avanzado mas que el tamaño de la lista
+        throw std::out_of_range("Out of range!");
+
+    it = tmp;
+
+    return it;
+}
+
+template <typename istype>
+bool IteratorS<istype>::operator==(const IteratorS<istype> &iter2) const
+{
+    return (this->iterator == iter2.iterator);
+}
+
+template <typename istype>
+bool IteratorS<istype>::operator!=(const IteratorS<istype> &iter2) const
+{
+    return (this->iterator != iter2.iterator);
+}
+
+template <typename istype>
+bool IteratorS<istype>::operator==(const Node<istype> *NODE) const
+{
+    return (this->iterator != NODE);
+}
+
+template <typename istype>
+bool IteratorS<istype>::operator!=(const Node<istype> *NODE) const
+{
+    return (this->iterator != NODE);
 }
 
 template <typename istype>
@@ -283,11 +344,8 @@ public:
     type operator[](const int index);                        //Operador de acceso con corchetes
     linkedlist<type> operator()(const size_t star, int end); //Operador rebanada XD reatorna un sublista en el rago del los indices señalados(inclusivo)
 
-    //IteratorS<type> begin(); //Retorna un iterador al princio de la lista
-    //IteratorS<type> end();   //Retorna un iterador al final de la lista
-
-    IteratorS<type> begin();
-    IteratorS<type> end();
+    IteratorS<type> begin(); //Retorna un iterador al princio de la lista
+    IteratorS<type> end();   //Retorna un iterador al final de la lista
 
     ~linkedlist();
 };
@@ -458,7 +516,7 @@ Node<type> *linkedlist<type>::at(size_t index) const
         it = it->next;
         k++;
     }
-    std::cout << it->getdata() << std::endl;
+    //std::cout << it->getdata() << std::endl;
     return it;
 }
 
@@ -785,7 +843,12 @@ int main(int argc, char const *argv[])
 
     std::cout << slist << std::endl;
 
-    A.push(1);
+    for (IteratorS<std::string> i = slist.begin() + 2; i != slist.at(7); i++)
+    {
+        std::cout << i() << std::endl;
+    }
+
+    /*A.push(1);
     A.push(2);
     A.append(15);
     A.push(20);
@@ -821,7 +884,7 @@ int main(int argc, char const *argv[])
 
     (B.empty()) ? std::cout << "v\n" : std::cout << "f\n";
     B = A(3, -1);
-    std::cout << B << std::endl;
+    std::cout << B << std::endl;*/
 
     return 0;
 }
