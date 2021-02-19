@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <any>
 #include <cstdbool>
 #include <cstdlib>
 #include <vector>
@@ -249,6 +250,14 @@ private:
 
     Node<type> *_reverse(Node<type> *Head); //Funcion para invertir una lista de forma recursiva
 
+    template <typename... args>
+    inline type for_each_arg(type f, args &&... arg)
+    {
+        (f(std::forward<args>(arg)), ...);
+        return f;
+    }
+
+    int index_help; //Variable aux. de asignacion por corchetes
 public:
     linkedlist();                              //Constructor default
     linkedlist(type init, size_t size);        //Inicializa una lista con un tamaño y un valor
@@ -346,6 +355,7 @@ public:
     linkedlist<type> operator!();                                //Operador inversion retorna la lista invertida(no modifica el objeto )
 
     type operator[](const int index);                        //Operador de acceso con corchetes
+    linkedlist<type> &operator=(const type &data);           //Operador de asignacion usando corchetes *(lista[5] = data)
     linkedlist<type> operator()(const size_t star, int end); //Operador rebanada XD reatorna un sublista en el rago del los indices señalados(inclusivo)
 
     IteratorS<type> begin(); //Retorna un iterador al princio de la lista
@@ -373,6 +383,12 @@ template <typename type>
 template <typename... args>
 linkedlist<type>::linkedlist(args &&... params)
 {
+    this->size = 0;
+    this->Head = NULL;
+    this->Tail = NULL;
+    this->Nodes = NULL;
+
+    ((*this).append(params), ...); //Usamos una fold expression para insertar los elementos
 }
 
 template <typename type>
@@ -394,6 +410,13 @@ void linkedlist<type>::push(auto Data)
 }
 
 template <typename type>
+template <typename... args>
+void linkedlist<type>::push(args &&... elements)
+{ //Hacer push a  multiples elementos a la vez *push(1,2,3,4,5, ..., n)
+    ((*this).push(elements), ...);
+}
+
+template <typename type>
 void linkedlist<type>::append(auto Data)
 {
     type data = Data;
@@ -408,6 +431,13 @@ void linkedlist<type>::append(auto Data)
         this->Tail = this->Nodes;           //Ahora el tail es el nuevo nodo
         this->size += 1;                    //Aumentamos el tamaño de la lista
     }
+}
+
+template <typename type>
+template <typename... args>
+void linkedlist<type>::append(args &&... elements)
+{
+    ((*this).append(elements), ...);
 }
 
 template <typename type>
@@ -765,7 +795,7 @@ linkedlist<type> linkedlist<type>::operator!()
 
 template <typename type>
 linkedlist<type> linkedlist<type>::operator()(size_t start, int end)
-{
+{ //Operador para extraer partes de la lista para generar una lista nuevaelements
     size_t k = 0;
 
     Node<type> *it = this->Head;
@@ -798,6 +828,7 @@ type linkedlist<type>::operator[](const int index)
     if ((index >= this->size || index < 0) && index != -1)
         throw std::out_of_range("Invalid index!");
 
+    this->index_help = index;
     if (index == -1)
         index = this->size - 1;
 
@@ -874,10 +905,12 @@ private:
     NodeD<typed> *Nodes;
     size_t size;
 
-    NodeD<typed> *_reverse(NodeD<typed> *node);
+    NodeD<typed> *_reverse(NodeD<typed> *node); //Funcion para invertir una lista recursivamente
 
 public:
     linkedlistD();
+    template <typename... args>
+    linkedlistD(args &&... elements);
 
     void push(auto Data); //Inserta un elemento al principio de la lista
     template <typename... args>
@@ -969,6 +1002,18 @@ linkedlistD<typed>::linkedlistD()
 }
 
 template <typename typed>
+template <typename... args>
+linkedlistD<typed>::linkedlistD(args &&... elements)
+{
+    this->Head = NULL;
+    this->Tail = NULL;
+    this->Nodes = NULL;
+    this->size = 0;
+
+    ((*this).append(elements), ...);
+}
+
+template <typename typed>
 void linkedlistD<typed>::push(auto Data)
 {
     typed data = Data;
@@ -990,6 +1035,13 @@ void linkedlistD<typed>::push(auto Data)
 }
 
 template <typename typed>
+template <typename... args>
+void linkedlistD<typed>::push(args &&... elements)
+{
+    ((*this).push(elements), ...);
+}
+
+template <typename typed>
 void linkedlistD<typed>::append(auto Data)
 {
     typed dat = Data;
@@ -1003,6 +1055,13 @@ void linkedlistD<typed>::append(auto Data)
         this->Tail = this->Nodes;
         this->size += 1;
     }
+}
+
+template <typename typed>
+template <typename... args>
+void linkedlistD<typed>::append(args &&... elements)
+{
+    ((*this).append(elements), ...);
 }
 
 template <typename typed>
@@ -1206,11 +1265,23 @@ linkedlistD<typed>::~linkedlistD()
 
 int main(int argc, char const *argv[])
 {
-    linkedlist<int> A, B, C;
+    linkedlist<int> A, B, C(11, 2, 3, 4, 56, 6, 8, 9, 4, 3);
     linkedlist<std::string> slist;
-
     linkedlistD<int> DL;
+    linkedlist<std::any> anylist;
 
+    /*anylist.push("hola");
+    anylist.push(12.5);
+    anylist.push(3);
+    anylist.push("joder claro que si");
+    anylist.push(2);*/
+
+    C.append(1, 2, 3, 4, 6, 7, 8);
+    C.push(1, 2, 3, 4, 5, 6);
+    std::cout << C << std::endl;
+    C.pop();
+    std::cout << C.size_list() << std::endl;
+    /*
     std::string s[7] = {"hi", "world", "flower", "cluod", "sun", "moon", ":)"};
 
     slist.push(s[0]);
@@ -1252,7 +1323,7 @@ int main(int argc, char const *argv[])
     std::cout << DL << std::endl;
     DL.reverse();
     std::cout << DL << std::endl;
-
+*/
     /*A.push(1);
     A.push(2);
     A.append(15);
